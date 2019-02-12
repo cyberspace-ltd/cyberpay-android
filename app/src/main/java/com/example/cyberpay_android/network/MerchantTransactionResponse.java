@@ -9,6 +9,8 @@ public class MerchantTransactionResponse implements Serializable {
 
     private String processorCode;
 
+    private Advice advice;
+
 
     public String getStatus() {
         return status;
@@ -24,6 +26,14 @@ public class MerchantTransactionResponse implements Serializable {
 
     public void setProcessorCode(String processorCode) {
         this.processorCode = processorCode;
+    }
+
+    public Advice getAdvice() {
+        return advice;
+    }
+
+    public void setAdvice(Advice advice) {
+        this.advice = advice;
     }
 
     public MerchantTransactionResponse() {

@@ -167,7 +167,8 @@ public class CyberPaySDK {
 
                 if (response.body().getData() != null && response.body().getData().getStatus().equals("Successful")) {
 
-                    transactionCallback.onSuccess(transaction.getTransactionReference());
+                    //Updated Reference from the Response
+                    transactionCallback.onSuccess(response.body().getData().getAdvice().getReference());
 
                 }
 
