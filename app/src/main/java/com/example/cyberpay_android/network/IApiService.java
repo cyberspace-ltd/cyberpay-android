@@ -2,6 +2,8 @@ package com.example.cyberpay_android.network;
 
 import android.view.View;
 
+import java.util.List;
+
 import okhttp3.RequestBody;
 import retrofit2.Call;
 import retrofit2.http.Body;
@@ -29,5 +31,14 @@ public interface IApiService {
 
     @POST("payments/otp")
     Call<ApiResponse<OtpResponse>> verifyOtp(@Body RequestBody params);
+
+    @POST("payments/bank/otp/{value}")
+    Call<ApiResponse<OtpResponse>> verifyBankOtp(@Body RequestBody params, @Path("value") String value);
+
+    @POST("payments/bank")
+    Call<ApiResponse<ChargeBankResponse>> chargeBank(@Body RequestBody params);
+
+    @GET("banks")
+    Call<ApiResponse<List<BankResponse>>> getBank();
 
 }

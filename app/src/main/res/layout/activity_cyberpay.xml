@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:custom="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -10,6 +11,47 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:padding="16dp">
+
+        <TextView
+            android:id="@+id/account_name_tv"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentTop="true"
+            android:layout_marginTop="16dp"
+            android:layout_marginBottom="5dp"
+            android:background="@android:color/transparent"
+            android:clickable="false"
+            android:focusable="false"
+            android:focusableInTouchMode="false"
+            android:fontFamily="sans-serif-thin"
+            android:labelFor="@+id/editText_Card_Number"
+            android:text="Amount"
+            android:textSize="15sp"
+            android:textStyle="bold"
+            android:typeface="sans"
+            tools:importantForAccessibility="no" />
+
+        <android.support.design.widget.TextInputLayout
+            android:id="@+id/card_name_text_input"
+            style="@style/Widget.MaterialComponents.TextInputLayout.FilledBox.Dense"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/account_name_tv">
+
+            <com.ndroid.CoolEditText
+                android:id="@+id/amount"
+                android:layout_width="match_parent"
+                android:layout_height="50dp"
+                android:layout_marginBottom="20dp"
+                android:inputType="number"
+                android:paddingEnd="@dimen/second"
+                android:paddingLeft="@dimen/second"
+                android:paddingRight="@dimen/second"
+                android:textSize="17sp"
+                custom:border_radius="10"
+                custom:border_stroke="2" />
+        </android.support.design.widget.TextInputLayout>
+
 
 
         <TextView
@@ -21,6 +63,7 @@
             android:clickable="false"
             android:focusable="false"
             android:focusableInTouchMode="false"
+            android:layout_below="@id/card_name_text_input"
             android:fontFamily="sans-serif-thin"
             android:labelFor="@+id/editText_Card_Number"
             android:text="@string/card_number_label"

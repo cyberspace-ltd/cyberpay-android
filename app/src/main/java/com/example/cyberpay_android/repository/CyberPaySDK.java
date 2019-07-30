@@ -4,10 +4,13 @@ package com.example.cyberpay_android.repository;
 import android.support.annotation.NonNull;
 import android.text.TextUtils;
 
+import com.example.cyberpay_android.adapter.BankSpinnerAdapter;
 import com.example.cyberpay_android.models.Charge;
 import com.example.cyberpay_android.models.Transaction;
 import com.example.cyberpay_android.network.ApiClient;
 import com.example.cyberpay_android.network.ApiResponse;
+import com.example.cyberpay_android.network.BankResponse;
+import com.example.cyberpay_android.network.ChargeBankResponse;
 import com.example.cyberpay_android.network.ChargeResponse;
 import com.example.cyberpay_android.network.IApiService;
 import com.example.cyberpay_android.network.MerchantTransactionResponse;
@@ -17,7 +20,9 @@ import com.example.cyberpay_android.network.VerifyTransactionResponse;
 
 import org.json.JSONObject;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import okhttp3.RequestBody;
@@ -81,16 +86,16 @@ public class CyberPaySDK {
         this.transaction = trans;
 
         Map<String, Object> jsonParams = new HashMap<>();
-        jsonParams.put("Currency", transaction.getCurrency());
+        jsonParams.put("currency", transaction.getCurrency());
 
         if(!TextUtils.isEmpty(transaction.getMerchantReference())){
-            jsonParams.put("MerchantRef", transaction.getMerchantReference());
+            jsonParams.put("merchantRef", transaction.getMerchantReference());
 
         }
-        jsonParams.put("Amount", transaction.getAmountInKobo());
-        jsonParams.put("Description", transaction.getDescription());
-        jsonParams.put("IntegrationKey", API_KEY);
-        jsonParams.put("ReturnUrl", transaction.getReturnUrl());
+        jsonParams.put("amount", transaction.getAmountInKobo());
+        jsonParams.put("description", transaction.getDescription());
+        jsonParams.put("integrationKey", API_KEY);
+        jsonParams.put("returnUrl", transaction.getReturnUrl());
 
         RequestBody body = RequestBody.create(okhttp3.MediaType.parse("application/json; charset=utf-8"), (new JSONObject(jsonParams))
                 .toString());
@@ -125,6 +130,27 @@ public class CyberPaySDK {
         });
     }
 
+
+    public void getBank( final TransactionCallback transactionCallback){
+        final Call<ApiResponse<List<BankResponse>>> call = webService.getBank();
+        call.enqueue(new Callback<ApiResponse<List<BankResponse>>>() {
+            @Override
+            public void onResponse(Call<ApiResponse<List<BankResponse>>> call, Response<ApiResponse<List<BankResponse>>> response) {
+                if(response.body() == null){
+                    return;
+                }
+                if(response.body().getData() != null && response.body().isSucceeded()){
+                    transactionCallback.onBank(response.body().getData());
+                }
+            }
+
+            @Override
+            public void onFailure(Call<ApiResponse<List<BankResponse>>> call, Throwable t) {
+                transactionCallback.onError(t, transaction);
+
+            }
+        });
+    }
     //verify transaction
     public void VerifyTransaction(final Charge charge, final TransactionCallback transactionCallback) {
 
@@ -236,6 +262,46 @@ public class CyberPaySDK {
 
     }
 
+    public void ChargeBank(final Charge charge, final TransactionCallback transactionCallback) {
+
+
+        Map<String, Object> jsonParams = new HashMap<>();
+        jsonParams.put("BankCode", charge.getBankCode());
+        jsonParams.put("AccountNumber", charge.getAccountNumber());
+        jsonParams.put("Reference", transaction.getTransactionReference());
+        jsonParams.put("AccountName", charge.getAccountName());
+
+        RequestBody body = RequestBody.create(okhttp3.MediaType.parse("application/json; charset=utf-8"), (new JSONObject(jsonParams))
+                .toString());
+
+        Call<ApiResponse<ChargeBankResponse>> call = webService.chargeBank(body);
+        call.enqueue(new Callback<ApiResponse<ChargeBankResponse>>() {
+            @Override
+            public void onResponse(@NonNull Call<ApiResponse<ChargeBankResponse>> call, @NonNull Response<ApiResponse<ChargeBankResponse>> response) {
+
+                if (response.body() == null)
+                    return;
+
+                if (response.body().getData() != null && response.body().getData().getStatus().equals("Otp")) {
+                    transactionCallback.onOtpRequired(transaction);
+
+                } else {
+
+                    transactionCallback.onError(new Throwable(response.body().getData().getMessage()), transaction);
+
+                }
+
+            }
+
+            @Override
+            public void onFailure(@NonNull Call<ApiResponse<ChargeBankResponse>> call, @NonNull Throwable t) {
+
+                transactionCallback.onError(t, transaction);
+
+            }
+        });
+
+    }
 
     public void VerifyOtp(final Transaction transaction, final TransactionCallback transactionCallback) {
 
@@ -273,6 +339,45 @@ public class CyberPaySDK {
     }
 
 
+    public void VerifyBankOtp(final Transaction transaction, final TransactionCallback transactionCallback) {
+
+        Map<String, Object> jsonParams = new HashMap<>();
+
+        jsonParams.put("BankCode", transaction.getBankCode());
+        jsonParams.put("AccountName", transaction.getAccountName());
+        jsonParams.put("AccountNumber", transaction.getAccountNumber());
+        jsonParams.put("Reference", transaction.getTransactionReference());
+
+        RequestBody body = RequestBody.create(okhttp3.MediaType.parse("application/json; charset=utf-8"), (new JSONObject(jsonParams))
+                .toString());
+
+        Call<ApiResponse<OtpResponse>> call = webService.verifyBankOtp(body, transaction.getOtp());
+
+        call.enqueue(new Callback<ApiResponse<OtpResponse>>() {
+            @Override
+            public void onResponse(@NonNull Call<ApiResponse<OtpResponse>> call, @NonNull Response<ApiResponse<OtpResponse>> response) {
+
+
+                assert response.body() != null;
+                if (response.body().getData() != null && response.body().getData().getStatus().equals("Successful")) {
+
+                    transactionCallback.onSuccess(transaction.getTransactionReference());
+
+                } else if (response.body().getData() != null && response.body().getData().getStatus().equals("Failed")) {
+
+                    transactionCallback.onError(new Throwable(response.body().getData().getMessage()), transaction);
+                }
+
+            }
+
+            @Override
+            public void onFailure(@NonNull Call<ApiResponse<OtpResponse>> call, @NonNull Throwable t) {
+                transactionCallback.onError(t, transaction);
+            }
+        });
+    }
+
+
     public interface TransactionCallback {
 
         void onSuccess(String transactionReference);
@@ -280,5 +385,7 @@ public class CyberPaySDK {
         void onOtpRequired(Transaction transaction);
 
         void onError(Throwable error, Transaction transaction);
+
+        void onBank(List<BankResponse> bankResponses);
     }
 }

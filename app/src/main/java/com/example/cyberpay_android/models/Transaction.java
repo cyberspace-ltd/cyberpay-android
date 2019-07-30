@@ -23,7 +23,12 @@ public class Transaction implements Serializable {
 
     private String transactionReference;//gotten after set charge
 
-    private String otp;//only if otp is required
+    private String Otp;//only if otp is required
+
+    private String bankCode;
+    private String accountNumber;
+    private String accountName;
+
 
     public Transaction() {
     }
@@ -104,10 +109,35 @@ public class Transaction implements Serializable {
     }
 
     public String getOtp() {
-        return otp;
+        return Otp;
     }
 
     public void setOtp(String otp) {
-        this.otp = otp;
+        this.Otp = otp;
+    }
+
+
+    public String getBankCode() {
+        return bankCode;
+    }
+
+    public void setBankCode(String bankCode) {
+        this.bankCode = bankCode;
+    }
+
+    public String getAccountNumber() {
+        return accountNumber;
+    }
+
+    public void setAccountNumber(String accountNumber) {
+        this.accountNumber = accountNumber;
+    }
+
+    public String getAccountName() {
+        return accountName;
+    }
+
+    public void setAccountName(String accountName) {
+        this.accountName = accountName;
     }
 }

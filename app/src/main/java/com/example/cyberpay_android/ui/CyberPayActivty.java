@@ -10,13 +10,18 @@ import android.widget.Toast;
 import com.example.cyberpay_android.R;
 import com.example.cyberpay_android.models.Charge;
 import com.example.cyberpay_android.models.Transaction;
+import com.example.cyberpay_android.network.BankResponse;
 import com.example.cyberpay_android.repository.CyberPaySDK;
+import com.ndroid.CoolEditText;
 
+import java.util.List;
+import java.util.Random;
 import java.util.regex.Pattern;
 
 public class CyberPayActivty extends AppCompatActivity {
 
 
+    CoolEditText amount;
     CardNumberEditText editText_Card_Number;
 
     ExpiryDateEditText editText_Card_Date;
@@ -35,7 +40,9 @@ public class CyberPayActivty extends AppCompatActivity {
         setContentView(R.layout.activity_cyberpay);
 
 
-        CyberPaySDK.initializeTestEnvironment("e2d0ff2733ba470ca1f7a4cb98a190dc");
+        CyberPaySDK.initializeTestEnvironment("d5355204f9cf495f853c8f8d26ada19b");
+
+        amount = findViewById(R.id.amount);
 
         editText_Card_Number = findViewById(R.id.editText_Card_Number);
 
@@ -47,18 +54,55 @@ public class CyberPayActivty extends AppCompatActivity {
         findViewById(R.id.payButton).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                BeginTransaction();
+                validateInput();
             }
         });
     }
+    private void validateInput() {
+        boolean valid = true;
 
+        if(amount.getText().toString().trim().length() == 0){
+            valid = false;
+            amount.setError("Amount is needed");
+        }
+        if(editText_Card_Number.getText().toString().trim().length() == 0){
+            valid = false;
+            editText_Card_Number.setError("Card Number is needed");
+        }
+
+        if(editText_Card_Date.getText().toString().trim().length() == 0){
+            valid = false;
+            editText_Card_Date.setError("Expiry Date is needed");
+        }
+        if(editText_Card_cvv.getText().toString().trim().length() == 0){
+            valid = false;
+            editText_Card_cvv.setError("CVV is needed");
+        }
+
+        if(valid)
+            BeginTransaction();
+
+    }
+
+
+    public static long generateRandom(int length) {
+        Random random = new Random();
+        char[] digits = new char[length];
+        digits[0] = (char) (random.nextInt(9) + '1');
+        for (int i = 1; i < length; i++) {
+            digits[i] = (char) (random.nextInt(10) + '0');
+        }
+        return Long.parseLong(new String(digits));
+    }
 
     private void BeginTransaction() {
 
+        String amountText = amount.getText().toString().trim();
+        Double amountValue = Double.parseDouble(amountText)*100;
         transaction = new Transaction();
-        transaction.setAmountInKobo(10000.00);
+        transaction.setAmountInKobo(amountValue);
         transaction.setDescription("Test transaction from Android SDK");
-
+        transaction.setMerchantReference(String.valueOf(generateRandom(10)));
 
         String expiryDate = editText_Card_Date.getText().toString();
 
@@ -92,6 +136,11 @@ public class CyberPayActivty extends AppCompatActivity {
                 Toast.makeText(CyberPayActivty.this, "Error: " + transaction.getTransactionReference(), Toast.LENGTH_LONG).show();
 
             }
+
+            @Override
+            public void onBank(List<BankResponse> bankResponses) {
+
+            }
         });
     }
 
@@ -123,6 +172,11 @@ public class CyberPayActivty extends AppCompatActivity {
             public void onError(Throwable error, Transaction transaction) {
 
                 Toast.makeText(CyberPayActivty.this, "Error: " + transaction.getTransactionReference(), Toast.LENGTH_LONG).show();
+
+            }
+
+            @Override
+            public void onBank(List<BankResponse> bankResponses) {
 
             }
         });

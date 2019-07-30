@@ -7,4 +7,13 @@
     <string name="cvv_label">CVV</string>
     <string name="pay_label">Pay</string>
     <string name="verify">Verify</string>
+
+    <string-array name="bank">
+        <item>Select your bank</item>
+        <item>Zenith International bank</item>
+        <item>Wema Bank PLC</item>
+        <item>Unity Bank PLC</item>
+        <item>SUN Trust Bank PLC</item>
+        <item>Guaranteed Trust Bank</item>
+    </string-array>
 </resources>
