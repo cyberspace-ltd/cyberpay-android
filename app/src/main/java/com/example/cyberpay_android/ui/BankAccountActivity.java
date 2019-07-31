@@ -113,7 +113,7 @@ public class BankAccountActivity extends AppCompatActivity {
 
         if(editText_Account_Number.getText().toString().trim().length() == 0){
             valid = false;
-            editText_Account_Number.setError("Account Number is needed"); 
+            editText_Account_Number.setError("Account Number is needed");
         }
 
         if(editText_Account_Name.getText().toString().trim().length() == 0){
