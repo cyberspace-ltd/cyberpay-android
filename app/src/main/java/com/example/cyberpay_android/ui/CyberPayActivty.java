@@ -131,6 +131,16 @@ public class CyberPayActivty extends AppCompatActivity {
             }
 
             @Override
+            public void onSecure3dRequired(Transaction transaction) {
+
+            }
+
+            @Override
+            public void onSecure3DMpgsRequired(Transaction transaction) {
+
+            }
+
+            @Override
             public void onError(Throwable error, Transaction transaction) {
 
                 Toast.makeText(CyberPayActivty.this, "Error: " + transaction.getTransactionReference(), Toast.LENGTH_LONG).show();
@@ -169,6 +179,24 @@ public class CyberPayActivty extends AppCompatActivity {
             }
 
             @Override
+            public void onSecure3dRequired(Transaction transaction) {
+                Toast.makeText(CyberPayActivty.this, "Transaction successful: Transaction Ref: " + transaction.getTransactionReference(), Toast.LENGTH_LONG).show();
+
+                Intent intent = new Intent(CyberPayActivty.this, MakePaymentActivity.class);
+                intent.putExtra(MakePaymentActivity.PARAM_TRANSACTION, transaction.getReturnUrl());
+                startActivity(intent);
+            }
+
+            @Override
+            public void onSecure3DMpgsRequired(Transaction transaction) {
+                Toast.makeText(CyberPayActivty.this, "Transaction successful: Transaction Ref: " + transaction.getTransactionReference(), Toast.LENGTH_LONG).show();
+
+                Intent intent = new Intent(CyberPayActivty.this, MakePaymentActivity.class);
+                intent.putExtra(MakePaymentActivity.PARAM_TRANSACTION, transaction.getReturnUrl());
+                startActivity(intent);
+            }
+
+            @Override
             public void onError(Throwable error, Transaction transaction) {
 
                 Toast.makeText(CyberPayActivty.this, "Error: " + transaction.getTransactionReference(), Toast.LENGTH_LONG).show();
@@ -177,6 +205,7 @@ public class CyberPayActivty extends AppCompatActivity {
 
             @Override
             public void onBank(List<BankResponse> bankResponses) {
+                Toast.makeText(CyberPayActivty.this, "Transaction successful: Transaction Ref: " + transaction.getTransactionReference(), Toast.LENGTH_LONG).show();
 
             }
         });

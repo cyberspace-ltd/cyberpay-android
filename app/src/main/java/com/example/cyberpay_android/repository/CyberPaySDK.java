@@ -4,7 +4,6 @@ package com.example.cyberpay_android.repository;
 import android.support.annotation.NonNull;
 import android.text.TextUtils;
 
-import com.example.cyberpay_android.adapter.BankSpinnerAdapter;
 import com.example.cyberpay_android.models.Charge;
 import com.example.cyberpay_android.models.Transaction;
 import com.example.cyberpay_android.network.ApiClient;
@@ -20,7 +19,6 @@ import com.example.cyberpay_android.network.VerifyTransactionResponse;
 
 import org.json.JSONObject;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -88,7 +86,7 @@ public class CyberPaySDK {
         Map<String, Object> jsonParams = new HashMap<>();
         jsonParams.put("currency", transaction.getCurrency());
 
-        if(!TextUtils.isEmpty(transaction.getMerchantReference())){
+        if (!TextUtils.isEmpty(transaction.getMerchantReference())) {
             jsonParams.put("merchantRef", transaction.getMerchantReference());
 
         }
@@ -131,15 +129,15 @@ public class CyberPaySDK {
     }
 
 
-    public void getBank( final TransactionCallback transactionCallback){
+    public void getBank(final TransactionCallback transactionCallback) {
         final Call<ApiResponse<List<BankResponse>>> call = webService.getBank();
         call.enqueue(new Callback<ApiResponse<List<BankResponse>>>() {
             @Override
             public void onResponse(Call<ApiResponse<List<BankResponse>>> call, Response<ApiResponse<List<BankResponse>>> response) {
-                if(response.body() == null){
+                if (response.body() == null) {
                     return;
                 }
-                if(response.body().getData() != null && response.body().isSucceeded()){
+                if (response.body().getData() != null && response.body().isSucceeded()) {
                     transactionCallback.onBank(response.body().getData());
                 }
             }
@@ -151,6 +149,7 @@ public class CyberPaySDK {
             }
         });
     }
+
     //verify transaction
     public void VerifyTransaction(final Charge charge, final TransactionCallback transactionCallback) {
 
@@ -177,7 +176,6 @@ public class CyberPaySDK {
             }
         });
     }
-
 
 
     public void VerifyMerchantTransaction(final String merchantReference, final TransactionCallback transactionCallback) {
@@ -207,7 +205,6 @@ public class CyberPaySDK {
             }
         });
     }
-
 
 
     public void ChargeCard(final Charge charge, final TransactionCallback transactionCallback) {
@@ -242,7 +239,16 @@ public class CyberPaySDK {
 
 
                 } else if (response.body().getData() != null && response.body().getData().getStatus().equals("Otp")) {
+                    transaction.setReturnUrl(response.body().getData().getRedirectUrl());
                     transactionCallback.onOtpRequired(transaction);
+
+                } else if (response.body().getData() != null && response.body().getData().getStatus().equals("Secure3D")) {
+                    transaction.setReturnUrl(response.body().getData().getRedirectUrl());
+                    transactionCallback.onSecure3dRequired(transaction);
+
+                } else if (response.body().getData() != null && response.body().getData().getStatus().equals("Secure3DMpgs")) {
+                    transaction.setReturnUrl(response.body().getData().getRedirectUrl());
+                    transactionCallback.onSecure3DMpgsRequired(transaction);
 
                 } else {
 
@@ -260,6 +266,31 @@ public class CyberPaySDK {
             }
         });
 
+    }
+
+
+    public void enrolOtp(final TransactionCallback transactionCallback) {
+        Map<String, Object> jsonParams = new HashMap<>();
+        jsonParams.put("reference", "yourRef");
+        jsonParams.put("otp", "YourOTP");
+
+        RequestBody body = RequestBody.create(okhttp3.MediaType.parse("application/json; charset=utf-8"), (new JSONObject(jsonParams)).toString());
+
+        Call<ApiResponse<ChargeBankResponse>> call = webService.enrolOtp(body);
+        call.enqueue(new Callback<ApiResponse<ChargeBankResponse>>() {
+            @Override
+            public void onResponse(Call<ApiResponse<ChargeBankResponse>> call, Response<ApiResponse<ChargeBankResponse>> response) {
+                if (response.body().getData() != null && response.body().getData().getStatus().equals("EnrollOtp")) {
+                    transactionCallback.onOtpRequired(transaction);
+
+                }
+            }
+
+            @Override
+            public void onFailure(Call<ApiResponse<ChargeBankResponse>> call, Throwable t) {
+
+            }
+        });
     }
 
     public void ChargeBank(final Charge charge, final TransactionCallback transactionCallback) {
@@ -383,6 +414,10 @@ public class CyberPaySDK {
         void onSuccess(String transactionReference);
 
         void onOtpRequired(Transaction transaction);
+
+        void onSecure3dRequired(Transaction transaction);
+
+        void onSecure3DMpgsRequired(Transaction transaction);
 
         void onError(Throwable error, Transaction transaction);
 

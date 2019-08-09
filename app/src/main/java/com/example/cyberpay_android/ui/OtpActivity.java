@@ -78,6 +78,16 @@ public class OtpActivity extends AppCompatActivity implements CyberPaySDK.Transa
     }
 
     @Override
+    public void onSecure3dRequired(Transaction transaction) {
+
+    }
+
+    @Override
+    public void onSecure3DMpgsRequired(Transaction transaction) {
+
+    }
+
+    @Override
     public void onError(Throwable error, Transaction transaction) {
         Toast.makeText(this, "Error: " + transaction.getTransactionReference(), Toast.LENGTH_LONG).show();
 

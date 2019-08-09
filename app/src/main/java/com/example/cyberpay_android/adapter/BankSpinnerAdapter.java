@@ -58,8 +58,9 @@ public class BankSpinnerAdapter extends BaseAdapter {
         BankResponse bank = bankList.get(i);
         if(bank != null){
             String bankName = bank.getBankName();
+            String bankCode = bank.getBankCode();
             viewHolder.banks.setText(bankName);
-            viewHolder.banks.setTag(bank.getId());
+            viewHolder.banks.setTag(bankCode);
         }
         return view;
     }

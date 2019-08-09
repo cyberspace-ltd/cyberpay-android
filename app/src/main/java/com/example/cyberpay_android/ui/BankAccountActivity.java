@@ -31,7 +31,7 @@ public class BankAccountActivity extends AppCompatActivity {
     Spinner bankSpinner;
     Charge charge;
     BankSpinnerAdapter adapter;
-    int bankCode;
+    String bankCode;
     String bankName;
     String bankAccountName, bankAccountNumber;
 
@@ -41,6 +41,7 @@ public class BankAccountActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_bank_account);
+        loadBanks();
 
         CyberPaySDK.initializeTestEnvironment("d5355204f9cf495f853c8f8d26ada19b");
 
@@ -53,7 +54,6 @@ public class BankAccountActivity extends AppCompatActivity {
 
         adapter = new BankSpinnerAdapter(this);
         bankSpinner.setAdapter(adapter);
-        loadBanks();
 
         bankSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
@@ -63,12 +63,12 @@ public class BankAccountActivity extends AppCompatActivity {
                 bankSpinner.getSelectedItem().toString();
 
                 int bankID = bankSpinner.getSelectedItemPosition();
-                bankCode = adapter.getItem(bankID).getId();
+                bankCode = adapter.getItem(bankID).getBankCode();
             }
 
             @Override
             public void onNothingSelected(AdapterView<?> adapterView) {
-                bankCode = 070;
+                bankCode = "057";
             }
         });
         findViewById(R.id.payBankButton).setOnClickListener(new View.OnClickListener() {
@@ -89,6 +89,16 @@ public class BankAccountActivity extends AppCompatActivity {
 
             @Override
             public void onOtpRequired(Transaction transaction) {
+
+            }
+
+            @Override
+            public void onSecure3dRequired(Transaction transaction) {
+
+            }
+
+            @Override
+            public void onSecure3DMpgsRequired(Transaction transaction) {
 
             }
 
@@ -140,9 +150,9 @@ public class BankAccountActivity extends AppCompatActivity {
         bankAccountNumber = editText_Account_Number.getText().toString().trim();
 
         charge = new Charge();
-        charge.setBankCode("070");
-        charge.setAccountName("Shaba Okare Michael");
-        charge.setCardNumber("1234567890");
+        charge.setBankCode(bankCode);
+        charge.setAccountName(bankAccountName);
+        charge.setCardNumber(bankAccountNumber);
 
 
         CyberPaySDK.getInstance().SetTransaction(transaction, new CyberPaySDK.TransactionCallback() {
@@ -158,6 +168,16 @@ public class BankAccountActivity extends AppCompatActivity {
             public void onOtpRequired(Transaction transaction) {
 
                 //not needed for set transaction
+            }
+
+            @Override
+            public void onSecure3dRequired(Transaction transaction) {
+
+            }
+
+            @Override
+            public void onSecure3DMpgsRequired(Transaction transaction) {
+
             }
 
             @Override
@@ -198,6 +218,16 @@ public class BankAccountActivity extends AppCompatActivity {
                 intent.putExtra(OtpActivity.PARAM_TRANSACTION, transaction);
 
                 startActivity(intent);
+            }
+
+            @Override
+            public void onSecure3dRequired(Transaction transaction) {
+
+            }
+
+            @Override
+            public void onSecure3DMpgsRequired(Transaction transaction) {
+
             }
 
             @Override
