@@ -2,9 +2,13 @@ package com.example.cyberpay_android.ui;
 
 import android.content.Intent;
 import android.support.design.widget.TextInputEditText;
+import android.support.design.widget.TextInputLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.view.View;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.cyberpay_android.R;
@@ -22,6 +26,9 @@ public class CyberPayActivty extends AppCompatActivity {
 
 
     CoolEditText amount;
+    CoolEditText editText_pin;
+    TextInputLayout cardPin;
+    TextView cardTextView;
     CardNumberEditText editText_Card_Number;
 
     ExpiryDateEditText editText_Card_Date;
@@ -43,6 +50,9 @@ public class CyberPayActivty extends AppCompatActivity {
         CyberPaySDK.initializeTestEnvironment("d5355204f9cf495f853c8f8d26ada19b");
 
         amount = findViewById(R.id.amount);
+        editText_pin = findViewById(R.id.editText_pin);
+        cardPin = findViewById(R.id.pin_text_input);
+        cardTextView = findViewById(R.id.label_pin_number);
 
         editText_Card_Number = findViewById(R.id.editText_Card_Number);
 
@@ -50,6 +60,29 @@ public class CyberPayActivty extends AppCompatActivity {
 
         editText_Card_cvv = findViewById(R.id.editText_Card_cvv);
 
+        editText_Card_Number.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+
+                if(s.length() == 19){
+                    cardPin.setVisibility(View.VISIBLE);
+                    cardTextView.setVisibility(View.VISIBLE);
+                } else {
+                    cardPin.setVisibility(View.GONE);
+                    cardTextView.setVisibility(View.GONE);
+                }
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+
+            }
+        });
 
         findViewById(R.id.payButton).setOnClickListener(new View.OnClickListener() {
             @Override
@@ -98,11 +131,13 @@ public class CyberPayActivty extends AppCompatActivity {
     private void BeginTransaction() {
 
         String amountText = amount.getText().toString().trim();
+        String pinText = editText_pin.getText().toString().trim();
         Double amountValue = Double.parseDouble(amountText)*100;
         transaction = new Transaction();
         transaction.setAmountInKobo(amountValue);
         transaction.setDescription("Test transaction from Android SDK");
         transaction.setMerchantReference(String.valueOf(generateRandom(10)));
+
 
         String expiryDate = editText_Card_Date.getText().toString();
 
@@ -115,6 +150,8 @@ public class CyberPayActivty extends AppCompatActivity {
         charge.setCardExpiryYear(splitDate[1]);
         charge.setCardNumber(editText_Card_Number.getText().toString());
         charge.setCardCvv(editText_Card_cvv.getText().toString());
+        if(pinText.length()!= 0 )
+            charge.setCardPin(pinText);
 
 
         CyberPaySDK.getInstance().SetTransaction(transaction, new CyberPaySDK.TransactionCallback() {
@@ -183,8 +220,10 @@ public class CyberPayActivty extends AppCompatActivity {
                 Toast.makeText(CyberPayActivty.this, "Transaction successful: Transaction Ref: " + transaction.getTransactionReference(), Toast.LENGTH_LONG).show();
 
                 Intent intent = new Intent(CyberPayActivty.this, MakePaymentActivity.class);
+                intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                 intent.putExtra(MakePaymentActivity.PARAM_TRANSACTION, transaction.getReturnUrl());
                 startActivity(intent);
+                finish();
             }
 
             @Override
@@ -192,8 +231,10 @@ public class CyberPayActivty extends AppCompatActivity {
                 Toast.makeText(CyberPayActivty.this, "Transaction successful: Transaction Ref: " + transaction.getTransactionReference(), Toast.LENGTH_LONG).show();
 
                 Intent intent = new Intent(CyberPayActivty.this, MakePaymentActivity.class);
+                intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                 intent.putExtra(MakePaymentActivity.PARAM_TRANSACTION, transaction.getReturnUrl());
                 startActivity(intent);
+                finish();
             }
 
             @Override

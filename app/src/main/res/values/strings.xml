@@ -2,6 +2,7 @@
     <string name="app_name">Cyberpay-android</string>
     <string name="credit_mask_hint">XXXX XXXX XXXX XXXX</string>
     <string name="card_number_label">Card Number</string>
+    <string name="pin_number_label">Card Pin</string>
     <string name="expiry_date">Exp. Date</string>
     <string name="date_format_mm_yy">MM/YY</string>
     <string name="cvv_label">CVV</string>

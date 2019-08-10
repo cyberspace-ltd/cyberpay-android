@@ -10,6 +10,8 @@ public class Charge {
 
     private String accountNumber;
 
+    private String cardPin;
+
     private String cardNameHolder;
 
     private String cardExpiryMonth;
@@ -106,4 +108,11 @@ public class Charge {
         this.accountNumber = accountNumber;
     }
 
+    public String getCardPin() {
+        return cardPin;
+    }
+
+    public void setCardPin(String cardPin) {
+        this.cardPin = cardPin;
+    }
 }

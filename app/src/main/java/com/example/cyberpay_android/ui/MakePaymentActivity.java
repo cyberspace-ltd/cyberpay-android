@@ -3,6 +3,7 @@ package com.example.cyberpay_android.ui;
 import android.annotation.SuppressLint;
 import android.app.AlertDialog;
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.support.v4.widget.SwipeRefreshLayout;
@@ -15,6 +16,7 @@ import android.webkit.WebResourceRequest;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
+import android.widget.Toast;
 
 import com.example.cyberpay_android.R;
 
@@ -49,7 +51,7 @@ public class MakePaymentActivity extends AppCompatActivity implements SwipeRefre
     private void loadData(){
         if (PARAM_TRANSACTION != null){
             if (TextUtils.isEmpty(PARAM_TRANSACTION)){
-                okDialog(getApplicationContext(), "Failed", "CyberPay is currently unavailable, try again");
+                Toast.makeText(getApplicationContext(),  "CyberPay is currently unavailable, try again", Toast.LENGTH_SHORT).show();
             } else {
                 initWebView(PARAM_TRANSACTION);
             }
@@ -89,9 +91,15 @@ public class MakePaymentActivity extends AppCompatActivity implements SwipeRefre
                 swipeRefreshLayout.setRefreshing(false);
 
 
-                if(url.startsWith("http://cyberpay-payment.azurewebsites.net/pay")){
+                if(url.startsWith("https://payment.staging.cyberpay.ng/notify?ref=")){
                     webView.destroy();
+                    reference = url.substring(url.lastIndexOf("=")+ 1);
+
+
+                    startActivity(new Intent(MakePaymentActivity.this, CyberPayActivty.class));
+                    finish();
                 }
+
 
             }
 
@@ -113,16 +121,6 @@ public class MakePaymentActivity extends AppCompatActivity implements SwipeRefre
         loadData();
     }
 
-    public static void okDialog(Context context, String title, String message){
-        new AlertDialog.Builder(context)
-                .setIcon(android.R.drawable.ic_dialog_alert)
-                .setTitle(title)
-                .setMessage(message)
-                .setPositiveButton("Ok", (dialogInterface, i) -> {
-
-                })
-                .show();
-    }
 
     private class CyberPayChromeClient extends WebChromeClient {
         Context context;

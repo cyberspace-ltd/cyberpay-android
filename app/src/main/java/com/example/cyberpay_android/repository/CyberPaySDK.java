@@ -3,6 +3,7 @@ package com.example.cyberpay_android.repository;
 
 import android.support.annotation.NonNull;
 import android.text.TextUtils;
+import android.widget.Toast;
 
 import com.example.cyberpay_android.models.Charge;
 import com.example.cyberpay_android.models.Transaction;
@@ -216,6 +217,7 @@ public class CyberPaySDK {
         jsonParams.put("CardNumber", charge.getCardNumber());
         jsonParams.put("CVV", charge.getCardCvv());
         jsonParams.put("Reference", transaction.getTransactionReference());
+        jsonParams.put("CardPin", charge.getCardPin());
 
         RequestBody body = RequestBody.create(okhttp3.MediaType.parse("application/json; charset=utf-8"), (new JSONObject(jsonParams))
                 .toString());

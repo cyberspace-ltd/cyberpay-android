@@ -90,11 +90,55 @@
 
         </android.support.design.widget.TextInputLayout>
 
+
+        <TextView
+            android:id="@+id/label_pin_number"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="5dp"
+            android:background="@android:color/transparent"
+            android:clickable="false"
+            android:layout_marginTop="15dp"
+            android:visibility="gone"
+            android:focusable="false"
+            android:maxLength="19"
+            android:focusableInTouchMode="false"
+            android:layout_below="@id/card_number_text_input"
+            android:fontFamily="sans-serif-thin"
+            android:labelFor="@+id/editText_pin"
+            android:text="@string/pin_number_label"
+            android:textStyle="bold"
+            tools:importantForAccessibility="no" />
+
+        <android.support.design.widget.TextInputLayout
+            android:id="@+id/pin_text_input"
+            style="@style/Widget.MaterialComponents.TextInputLayout.FilledBox.Dense"
+            android:layout_width="match_parent"
+            android:visibility="gone"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/label_pin_number">
+
+            <com.ndroid.CoolEditText
+                android:id="@+id/editText_pin"
+                android:layout_width="match_parent"
+                android:layout_height="45dp"
+                android:layout_marginBottom="20dp"
+                android:inputType="numberPassword"
+                android:paddingEnd="@dimen/second"
+                android:paddingLeft="@dimen/second"
+                android:paddingRight="@dimen/second"
+                android:maxLength="4"
+                android:textSize="17sp"
+                custom:border_radius="10"
+                custom:border_stroke="2" />
+        </android.support.design.widget.TextInputLayout>
+
+
         <TextView
             android:id="@+id/label_expiry_date"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_below="@id/card_number_text_input"
+            android:layout_below="@id/pin_text_input"
             android:layout_marginTop="5dp"
             android:layout_marginBottom="5dp"
             android:background="@android:color/transparent"
@@ -172,7 +216,7 @@
             android:id="@+id/label_cvv"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_below="@id/card_number_text_input"
+            android:layout_below="@id/pin_text_input"
             android:layout_alignStart="@id/card_cvv_input"
             android:layout_alignLeft="@id/card_cvv_input"
             android:layout_marginTop="5dp"
