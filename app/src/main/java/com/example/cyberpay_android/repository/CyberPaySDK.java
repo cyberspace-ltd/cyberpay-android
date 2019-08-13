@@ -6,6 +6,7 @@ import android.text.TextUtils;
 import android.widget.Toast;
 
 import com.example.cyberpay_android.models.Charge;
+import com.example.cyberpay_android.models.ChargeBank;
 import com.example.cyberpay_android.models.Transaction;
 import com.example.cyberpay_android.network.ApiClient;
 import com.example.cyberpay_android.network.ApiResponse;
@@ -17,16 +18,20 @@ import com.example.cyberpay_android.network.MerchantTransactionResponse;
 import com.example.cyberpay_android.network.OtpResponse;
 import com.example.cyberpay_android.network.TransactionResponse;
 import com.example.cyberpay_android.network.VerifyTransactionResponse;
+import com.google.gson.Gson;
 
 import org.json.JSONObject;
 
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import okhttp3.RequestBody;
+import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.Callback;
+import retrofit2.HttpException;
 import retrofit2.Response;
 
 
@@ -232,12 +237,12 @@ public class CyberPaySDK {
 
                 if (response.body().getData() != null && response.body().getData().getStatus().equals("Success")) {
 
-                    transactionCallback.onSuccess(transaction.getTransactionReference());
+                    transactionCallback.onSuccess(response.body().getData().getReference());
 
                 }
                 if (response.body().getData() != null && response.body().getData().getStatus().equals("Successful")) {
 
-                    transactionCallback.onSuccess(transaction.getTransactionReference());
+                    transactionCallback.onSuccess(response.body().getData().getReference());
 
 
                 } else if (response.body().getData() != null && response.body().getData().getStatus().equals("Otp")) {
@@ -273,7 +278,7 @@ public class CyberPaySDK {
 
     public void enrolOtp(final TransactionCallback transactionCallback) {
         Map<String, Object> jsonParams = new HashMap<>();
-        jsonParams.put("reference", "yourRef");
+        jsonParams.put("reference", transaction.getTransactionReference());
         jsonParams.put("otp", "YourOTP");
 
         RequestBody body = RequestBody.create(okhttp3.MediaType.parse("application/json; charset=utf-8"), (new JSONObject(jsonParams)).toString());
@@ -352,16 +357,38 @@ public class CyberPaySDK {
             public void onResponse(@NonNull Call<ApiResponse<OtpResponse>> call, @NonNull Response<ApiResponse<OtpResponse>> response) {
 
 
-                assert response.body() != null;
-                if (response.body().getData() != null && response.body().getData().getStatus().equals("Successful")) {
+                if(response.code() == 200){
+                    assert response.body() != null;
 
-                    transactionCallback.onSuccess(transaction.getTransactionReference());
+                    try{
+                         if (response.body().getData() != null && response.body().getData().getStatus().equals("Successful")) {
 
-                } else if (response.body().getData() != null && response.body().getData().getStatus().equals("Failed")) {
+                            transactionCallback.onSuccess(response.body().getData().getReference());
 
-                    transactionCallback.onError(new Throwable(response.body().getData().getMessage()), transaction);
+                        } else if (response.body().getData() != null && response.body().getData().getStatus().equals("Failed")) {
+
+                            transactionCallback.onError(new Throwable(response.body().getData().getMessage()), transaction);
+                        }
+                    }catch (Exception e){
+                        e.printStackTrace();
+                    }
+
+                } else if(response.code() == 500){
+                    ResponseBody responseBody = response.errorBody();
+
+                    Gson gson = new Gson();
+                    ApiResponse apiResponse = null;
+                    try{
+                        apiResponse = gson.fromJson(responseBody.string(),ApiResponse.class);
+                        if(apiResponse.getMessage() != null){
+                            transactionCallback.onError(new Throwable(apiResponse.getMessage()), transaction);
+
+                        }
+                    } catch (IOException e){
+                        e.printStackTrace();
+                    }
+
                 }
-
             }
 
             @Override
@@ -391,14 +418,37 @@ public class CyberPaySDK {
             public void onResponse(@NonNull Call<ApiResponse<OtpResponse>> call, @NonNull Response<ApiResponse<OtpResponse>> response) {
 
 
-                assert response.body() != null;
-                if (response.body().getData() != null && response.body().getData().getStatus().equals("Successful")) {
+                if(response.code() == 200){
+                    assert response.body() != null;
 
-                    transactionCallback.onSuccess(transaction.getTransactionReference());
+                    try{
+                        if (response.body().getData() != null && response.body().getData().getStatus().equals("Successful")) {
 
-                } else if (response.body().getData() != null && response.body().getData().getStatus().equals("Failed")) {
+                            transactionCallback.onSuccess(response.body().getData().getReference());
 
-                    transactionCallback.onError(new Throwable(response.body().getData().getMessage()), transaction);
+                        } else if (response.body().getData() != null && response.body().getData().getStatus().equals("Failed")) {
+
+                            transactionCallback.onError(new Throwable(response.body().getData().getMessage()), transaction);
+                        }
+                    }catch (Exception e){
+                        e.printStackTrace();
+                    }
+
+                } else if(response.code() == 500){
+                    ResponseBody responseBody = response.errorBody();
+
+                    Gson gson = new Gson();
+                    ApiResponse apiResponse = null;
+                    try{
+                        apiResponse = gson.fromJson(responseBody.string(),ApiResponse.class);
+                        if(apiResponse.getMessage() != null){
+                            transactionCallback.onError(new Throwable(apiResponse.getMessage()), transaction);
+
+                        }
+                    } catch (IOException e){
+                        e.printStackTrace();
+                    }
+
                 }
 
             }

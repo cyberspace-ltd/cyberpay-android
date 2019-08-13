@@ -22,8 +22,11 @@ import java.util.List;
 import java.util.Random;
 import java.util.regex.Pattern;
 
+import dmax.dialog.SpotsDialog;
+
 public class CyberPayActivty extends AppCompatActivity {
 
+    private SpotsDialog progressDialog;
 
     CoolEditText amount;
     CoolEditText editText_pin;
@@ -130,6 +133,9 @@ public class CyberPayActivty extends AppCompatActivity {
 
     private void BeginTransaction() {
 
+        progressDialog = new SpotsDialog(CyberPayActivty.this);
+        progressDialog.show();
+
         String amountText = amount.getText().toString().trim();
         String pinText = editText_pin.getText().toString().trim();
         Double amountValue = Double.parseDouble(amountText)*100;
@@ -158,6 +164,7 @@ public class CyberPayActivty extends AppCompatActivity {
             @Override
             public void onSuccess(String transactionReference) {
 
+                progressDialog.dismiss();
                 ChargeCard();
             }
 
@@ -180,7 +187,7 @@ public class CyberPayActivty extends AppCompatActivity {
             @Override
             public void onError(Throwable error, Transaction transaction) {
 
-                Toast.makeText(CyberPayActivty.this, "Error: " + transaction.getTransactionReference(), Toast.LENGTH_LONG).show();
+                Toast.makeText(CyberPayActivty.this, "Error: " + error, Toast.LENGTH_LONG).show();
 
             }
 
@@ -240,7 +247,7 @@ public class CyberPayActivty extends AppCompatActivity {
             @Override
             public void onError(Throwable error, Transaction transaction) {
 
-                Toast.makeText(CyberPayActivty.this, "Error: " + transaction.getTransactionReference(), Toast.LENGTH_LONG).show();
+                Toast.makeText(CyberPayActivty.this, "Error: " + error, Toast.LENGTH_LONG).show();
 
             }
 

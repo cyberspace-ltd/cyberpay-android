@@ -14,7 +14,6 @@ import com.example.cyberpay_android.models.Charge;
 import com.example.cyberpay_android.models.Transaction;
 import com.example.cyberpay_android.network.BankResponse;
 import com.example.cyberpay_android.repository.CyberPaySDK;
-import com.example.cyberpay_android.utils.AppUtility;
 import com.ndroid.CoolEditText;
 
 import java.util.ArrayList;
@@ -28,8 +27,9 @@ import static com.example.cyberpay_android.ui.CyberPayActivty.generateRandom;
 public class BankAccountActivity extends AppCompatActivity {
 
     CoolEditText editText_Account_Number, editText_Account_Name;
+    CoolEditText amount;
     Spinner bankSpinner;
-    Charge charge;
+    Charge chargeBank;
     BankSpinnerAdapter adapter;
     String bankCode;
     String bankName;
@@ -45,6 +45,7 @@ public class BankAccountActivity extends AppCompatActivity {
 
         CyberPaySDK.initializeTestEnvironment("d5355204f9cf495f853c8f8d26ada19b");
 
+        amount = findViewById(R.id.amount);
 
         editText_Account_Name = findViewById(R.id.card_name);
 
@@ -121,6 +122,11 @@ public class BankAccountActivity extends AppCompatActivity {
     private void validateInput() {
         boolean valid = true;
 
+        if(amount.getText().toString().trim().length() == 0){
+            valid = false;
+            amount.setError("Amount is needed");
+        }
+
         if(editText_Account_Number.getText().toString().trim().length() == 0){
             valid = false;
             editText_Account_Number.setError("Account Number is needed");
@@ -141,23 +147,26 @@ public class BankAccountActivity extends AppCompatActivity {
 
         progressDialog = new SpotsDialog(BankAccountActivity.this);
         progressDialog.show();
+        String amountText = amount.getText().toString().trim();
+        Double amountValue = Double.parseDouble(amountText)*100;
         transaction = new Transaction();
-        transaction.setAmountInKobo(10000.00);
+        transaction.setAmountInKobo(amountValue);
         transaction.setDescription("Test transaction from Android SDK");
         transaction.setMerchantReference(String.valueOf(generateRandom(10)));
 
         bankAccountName = editText_Account_Name.getText().toString().trim();
         bankAccountNumber = editText_Account_Number.getText().toString().trim();
 
-        charge = new Charge();
-        charge.setBankCode(bankCode);
-        charge.setAccountName(bankAccountName);
-        charge.setCardNumber(bankAccountNumber);
+        chargeBank = new Charge();
+        chargeBank.setBankCode(bankCode);
+        chargeBank.setAccountName(bankAccountName);
+        chargeBank.setAccountNumber(bankAccountNumber);
 
 
         CyberPaySDK.getInstance().SetTransaction(transaction, new CyberPaySDK.TransactionCallback() {
             @Override
             public void onSuccess(String transactionReference) {
+                Toast.makeText(BankAccountActivity.this, "Transaction successful: Transaction Ref: " + transactionReference, Toast.LENGTH_LONG).show();
 
                 progressDialog.dismiss();
                 ChargeBank();
@@ -183,7 +192,7 @@ public class BankAccountActivity extends AppCompatActivity {
             @Override
             public void onError(Throwable error, Transaction transaction) {
 
-                Toast.makeText(BankAccountActivity.this, "Error: " + transaction.getTransactionReference(), Toast.LENGTH_LONG).show();
+                Toast.makeText(BankAccountActivity.this, "Error: " + error, Toast.LENGTH_LONG).show();
 
             }
 
@@ -197,13 +206,13 @@ public class BankAccountActivity extends AppCompatActivity {
 
     private void ChargeBank() {
 
-        CyberPaySDK.getInstance().ChargeBank(charge, new CyberPaySDK.TransactionCallback() {
+        CyberPaySDK.getInstance().ChargeBank(chargeBank, new CyberPaySDK.TransactionCallback() {
             @Override
             public void onSuccess(String transactionReference) {
 
 
                 //This is called only when a transaction is successful
-                Toast.makeText(BankAccountActivity.this, "Transaction successful: Transaction Ref: " + transaction.getTransactionReference(), Toast.LENGTH_LONG).show();
+                Toast.makeText(BankAccountActivity.this, "Transaction successful: Transaction Ref: " + transactionReference, Toast.LENGTH_LONG).show();
 
             }
 
@@ -233,7 +242,7 @@ public class BankAccountActivity extends AppCompatActivity {
             @Override
             public void onError(Throwable error, Transaction transaction) {
 
-                Toast.makeText(BankAccountActivity.this, "Error: " + transaction.getTransactionReference(), Toast.LENGTH_LONG).show();
+                Toast.makeText(BankAccountActivity.this, "Error: " + error, Toast.LENGTH_LONG).show();
 
             }
 

@@ -47,6 +47,7 @@
                 android:paddingEnd="@dimen/second"
                 android:paddingLeft="@dimen/second"
                 android:paddingRight="@dimen/second"
+                android:maxLength="7"
                 android:textSize="17sp"
                 custom:border_radius="10"
                 custom:border_stroke="2" />
