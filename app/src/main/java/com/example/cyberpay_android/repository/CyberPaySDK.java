@@ -444,7 +444,7 @@ public class CyberPaySDK {
                         if(apiResponse.getMessage() != null){
                             transactionCallback.onError(new Throwable(apiResponse.getMessage()), transaction);
 
-                            
+
                         }
                     } catch (IOException e){
                         e.printStackTrace();
