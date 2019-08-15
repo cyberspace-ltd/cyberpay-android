@@ -95,18 +95,33 @@ public class MakePaymentActivity extends AppCompatActivity implements SwipeRefre
                     webView.destroy();
                     reference = url.substring(url.lastIndexOf("=")+ 1);
 
-
                     startActivity(new Intent(MakePaymentActivity.this, CyberPayActivty.class));
                     finish();
                 }
 
                 if(url.startsWith("https://payment.staging.cyberpay.ng/pay?reference")){
                     webView.destroy();
+
+                    startActivity(new Intent(MakePaymentActivity.this, CyberPayActivty.class));
+                    finish();
+                }
+
+                if(url.startsWith("https://payment.cyberpay.ng/notify?ref=")){
+                    webView.destroy();
                     reference = url.substring(url.lastIndexOf("=")+ 1);
 
                     startActivity(new Intent(MakePaymentActivity.this, CyberPayActivty.class));
                     finish();
                 }
+
+                if(url.startsWith("https://payment.cyberpay.ng/notify?ref=")){
+                    webView.destroy();
+                    reference = url.substring(url.lastIndexOf("=")+ 1);
+
+                    startActivity(new Intent(MakePaymentActivity.this, CyberPayActivty.class));
+                    finish();
+                }
+
 
 
             }
