@@ -13,7 +13,7 @@ import retrofit2.converter.gson.GsonConverterFactory;
 public class ApiClient {
 
 
-    private static String API_URL = "http://cyberpay-payment-api.azurewebsites.net/api/v1/";
+    private static String API_URL = "https://payment-api.staging.cyberpay.ng/api/v1/";
 
     private static IApiService iApiService;
     private static Retrofit retrofit = null;

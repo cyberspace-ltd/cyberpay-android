@@ -1,8 +1,8 @@
 package com.example.cyberpay_android.ui;
 
 import android.content.Intent;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.View;
@@ -12,17 +12,16 @@ import com.example.cyberpay_android.R;
 import com.example.cyberpay_android.models.Transaction;
 import com.example.cyberpay_android.network.BankResponse;
 import com.example.cyberpay_android.repository.CyberPaySDK;
+import com.example.cyberpay_android.utils.AppUtility;
 
 import java.util.List;
 
 import dmax.dialog.SpotsDialog;
 
-public class OtpActivity extends AppCompatActivity implements CyberPaySDK.TransactionCallback {
+public class OtpBankActivity extends AppCompatActivity implements CyberPaySDK.TransactionCallback {
 
 
     public static String PARAM_TRANSACTION = "PARAM_TRANSACTION";
-
-
 
     Transaction transaction;
 
@@ -60,7 +59,7 @@ public class OtpActivity extends AppCompatActivity implements CyberPaySDK.Transa
             public void onClick(View v) {
 
                 transaction.setOtp(txtPinEntry.getText().toString());
-                CyberPaySDK.getInstance().VerifyOtp(transaction, OtpActivity.this);
+                CyberPaySDK.getInstance().VerifyBankOtp(transaction, OtpBankActivity.this);
             }
         });
     }
@@ -69,7 +68,9 @@ public class OtpActivity extends AppCompatActivity implements CyberPaySDK.Transa
     @Override
     public void onSuccess(String transactionReference) {
         Toast.makeText(this, "Transaction successful: Transaction Ref: " + transactionReference, Toast.LENGTH_LONG).show();
-        startActivity(new Intent(OtpActivity.this, CyberpayPaymentSelectionActivity.class));
+        AppUtility.okDialog(getApplicationContext(),
+                "Success", "Transaction successful: Transaction Ref: " + transaction.getTransactionReference());
+
     }
 
     @Override
@@ -89,7 +90,7 @@ public class OtpActivity extends AppCompatActivity implements CyberPaySDK.Transa
 
     @Override
     public void onError(Throwable error, Transaction transaction) {
-        Toast.makeText(this, "Error: " + error.getMessage(), Toast.LENGTH_LONG).show();
+        Toast.makeText(this, "Error: " + transaction.getTransactionReference(), Toast.LENGTH_LONG).show();
 
     }
 

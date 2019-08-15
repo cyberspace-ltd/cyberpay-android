@@ -33,7 +33,7 @@ public class CyberpayPaymentSelectionActivity extends AppCompatActivity implemen
         ArrayList<PaymentSelection> paymentSelections = new ArrayList<>();
         paymentSelections.add(new PaymentSelection(1, "Card Payment", "Pay with MasterCard, Visa, or Verve", R.drawable.ic_credit_card_colored));
         paymentSelections.add(new PaymentSelection(2, "Bank", "Pay directly from your bank account", R.drawable.ic_bank_building));
-        paymentSelections.add(new PaymentSelection(3, "QR Code", "Pay quickly by scanning a QR Code", R.drawable.ic_qr_code));
+//        paymentSelections.add(new PaymentSelection(3, "QR Code", "Pay quickly by scanning a QR Code", R.drawable.ic_qr_code));
 
 
         mAdapter = new PaymentSelectionAdapter(paymentSelections, this);
@@ -46,6 +46,9 @@ public class CyberpayPaymentSelectionActivity extends AppCompatActivity implemen
         switch (selection.getId()) {
             case 1:
                 startActivity(new Intent(this, CyberPayActivty.class));
+                break;
+            case 2:
+                startActivity(new Intent(this, BankAccountActivity.class));
                 break;
             default:
                 Toast.makeText(this, "Feature not yet available", Toast.LENGTH_SHORT).show();

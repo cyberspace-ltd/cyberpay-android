@@ -2,6 +2,16 @@ package com.example.cyberpay_android.models;
 
 public class Charge {
 
+    private String accountName;
+
+    private String reference;
+
+    private String bankCode;
+
+    private String accountNumber;
+
+    private String cardPin;
+
     private String cardNameHolder;
 
     private String cardExpiryMonth;
@@ -63,5 +73,46 @@ public class Charge {
 
     public void setTransactionReference(String transactionReference) {
         this.transactionReference = transactionReference;
+    }
+
+
+    public String getAccountName() {
+        return accountName;
+    }
+
+    public void setAccountName(String accountName) {
+        this.accountName = accountName;
+    }
+
+    public String getReference() {
+        return reference;
+    }
+
+    public void setReference(String reference) {
+        this.reference = reference;
+    }
+
+    public String getBankCode() {
+        return bankCode;
+    }
+
+    public void setBankCode(String bankCode) {
+        this.bankCode = bankCode;
+    }
+
+    public String getAccountNumber() {
+        return accountNumber;
+    }
+
+    public void setAccountNumber(String accountNumber) {
+        this.accountNumber = accountNumber;
+    }
+
+    public String getCardPin() {
+        return cardPin;
+    }
+
+    public void setCardPin(String cardPin) {
+        this.cardPin = cardPin;
     }
 }
