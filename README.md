@@ -28,7 +28,7 @@ The Cyberpay Android SDK is compatible with Android Apps supported from Android 
 ```java
 
 	dependencies {
-	       implementation 'com.github.cyberspace-ltd:cyberpay-android:1.2'
+	       implementation 'com.github.cyberspace-ltd:cyberpay-android:1.5'
 	}
   
 ```
@@ -88,10 +88,11 @@ public class MainActivity extends AppCompatActivity {
 //The SetTransaction method returns a transaction Reference in the `onSuccess()` callback. Assign this transaction reference to the `transactionParameter` provided in the previous 
 //step and call the charge card method
 
-CyberPaySDK.getInstance().SetTransaction(transaction, new CyberPaySDK.TransactionCallback() {
+ CyberPaySDK.getInstance().SetTransaction(transaction, new CyberPaySDK.TransactionCallback() {
             @Override
             public void onSuccess(String transactionReference) {
 
+                progressDialog.dismiss();
                 ChargeCard();
             }
 
@@ -102,10 +103,25 @@ CyberPaySDK.getInstance().SetTransaction(transaction, new CyberPaySDK.Transactio
             }
 
             @Override
+            public void onSecure3dRequired(Transaction transaction) {
+                //not needed for set transaction
+            }
+
+            @Override
+            public void onSecure3DMpgsRequired(Transaction transaction) {
+                //not needed for set transaction
+            }
+
+            @Override
             public void onError(Throwable error, Transaction transaction) {
 
-                Toast.makeText(CyberPayActivty.this, "Error: " + transaction.getTransactionReference(), Toast.LENGTH_LONG).show();
+                Toast.makeText(CyberPayActivty.this, "Error: " + error, Toast.LENGTH_LONG).show();
 
+            }
+
+            @Override
+            public void onBank(List<BankResponse> bankResponses) {
+                //not needed for set transaction
             }
         });
 ```
@@ -113,23 +129,62 @@ CyberPaySDK.getInstance().SetTransaction(transaction, new CyberPaySDK.Transactio
 
 ```java
 
-       CyberPaySDK.getInstance().ChargeCard(charge, new CyberPaySDK.TransactionCallback() {
+        CyberPaySDK.getInstance().ChargeCard(charge, new CyberPaySDK.TransactionCallback() {
             @Override
             public void onSuccess(String transactionReference) {
 
                 //This is called only when a transaction is successful
+                // Toast.makeText(CyberPayActivty.this, "Transaction successful: Transaction Ref: " + transaction.getTransactionReference(), Toast.LENGTH_LONG).show();
+
             }
 
 
             @Override
             public void onOtpRequired(Transaction transaction) {
                 // This is called only when otp is required
+
+                // Toast.makeText(CyberPayActivty.this, "Otp Required Transaction Ref: " + transaction.getTransactionReference(), Toast.LENGTH_LONG).show();
+
+                // Intent intent = new Intent(CyberPayActivty.this, OtpActivity.class);
+                // intent.putExtra(OtpActivity.PARAM_TRANSACTION, transaction);
+
+                // startActivity(intent);
+            }
+
+            @Override
+            public void onSecure3dRequired(Transaction transaction) {
+                //Certain cards require using secure 3ds environments, which will be redirected to a 3d secure environment. 
+
+
+                Intent intent = new Intent(CyberPayActivty.this, MakePaymentActivity.class);
+                intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                intent.putExtra(MakePaymentActivity.PARAM_TRANSACTION, transaction.getReturnUrl());
+                startActivity(intent);
+                finish();
+            }
+
+            @Override
+            public void onSecure3DMpgsRequired(Transaction transaction) {
+                //Certain cards require using secure 3ds environments, which will be redirected to a 3d secure environment.
+
+                Intent intent = new Intent(CyberPayActivty.this, MakePaymentActivity.class);
+                intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                intent.putExtra(MakePaymentActivity.PARAM_TRANSACTION, transaction.getReturnUrl());
+                startActivity(intent);
+                finish();
             }
 
             @Override
             public void onError(Throwable error, Transaction transaction) {
 
-              //This is called only when an error occurs
+                Toast.makeText(CyberPayActivty.this, "Error: " + error, Toast.LENGTH_LONG).show();
+
+            }
+
+            @Override
+            public void onBank(List<BankResponse> bankResponses) {
+                Toast.makeText(CyberPayActivty.this, "Transaction successful: Transaction Ref: " + transaction.getTransactionReference(), Toast.LENGTH_LONG).show();
+
             }
         });
 
