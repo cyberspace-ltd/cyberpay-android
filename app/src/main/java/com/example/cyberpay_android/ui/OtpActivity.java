@@ -70,6 +70,7 @@ public class OtpActivity extends AppCompatActivity implements CyberPaySDK.Transa
     public void onSuccess(String transactionReference) {
         Toast.makeText(this, "Transaction successful: Transaction Ref: " + transactionReference, Toast.LENGTH_LONG).show();
         startActivity(new Intent(OtpActivity.this, CyberpayPaymentSelectionActivity.class));
+        finish();
     }
 
     @Override
@@ -90,6 +91,7 @@ public class OtpActivity extends AppCompatActivity implements CyberPaySDK.Transa
     @Override
     public void onError(Throwable error, Transaction transaction) {
         Toast.makeText(this, "Error: " + error.getMessage(), Toast.LENGTH_LONG).show();
+        finish();
 
     }
 

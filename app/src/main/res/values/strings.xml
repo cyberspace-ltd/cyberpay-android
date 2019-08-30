@@ -5,7 +5,7 @@
     <string name="pin_number_label">Card Pin</string>
     <string name="expiry_date">Exp. Date</string>
     <string name="date_format_mm_yy">MM/YY</string>
-    <string name="cvv_label">CVV</string>
+    <string name="cvv_label">cvv</string>
     <string name="pay_label">Pay</string>
     <string name="verify">Verify</string>
 

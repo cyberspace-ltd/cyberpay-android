@@ -170,7 +170,7 @@ After running the app, We have provided a test card to test the OTP flow instead
 ```java
 Card Number: 5399830000000008,
 Exp. Date: 05/30, 
-CVV: 000,
+cvv: 000,
 OTP:123456
 
 ````

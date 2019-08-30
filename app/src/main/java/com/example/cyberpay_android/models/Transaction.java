@@ -1,5 +1,7 @@
 package com.example.cyberpay_android.models;
 
+import org.json.JSONObject;
+
 import java.io.Serializable;
 
 public class Transaction implements Serializable {
@@ -17,6 +19,7 @@ public class Transaction implements Serializable {
     private String customerMobile;
 
 
+    private JSONObject card;
     private String returnUrl;
 
     private String description;
@@ -140,4 +143,7 @@ public class Transaction implements Serializable {
     public void setAccountName(String accountName) {
         this.accountName = accountName;
     }
+
+
+
 }

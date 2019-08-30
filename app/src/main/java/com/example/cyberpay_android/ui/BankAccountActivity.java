@@ -11,6 +11,7 @@ import android.widget.Toast;
 import com.example.cyberpay_android.R;
 import com.example.cyberpay_android.adapter.BankSpinnerAdapter;
 import com.example.cyberpay_android.models.Charge;
+import com.example.cyberpay_android.models.ChargeBank;
 import com.example.cyberpay_android.models.Transaction;
 import com.example.cyberpay_android.network.BankResponse;
 import com.example.cyberpay_android.repository.CyberPaySDK;
@@ -29,7 +30,7 @@ public class BankAccountActivity extends AppCompatActivity {
     CoolEditText editText_Account_Number, editText_Account_Name;
     CoolEditText amount;
     Spinner bankSpinner;
-    Charge chargeBank;
+    ChargeBank chargeBank;
     BankSpinnerAdapter adapter;
     String bankCode;
     String bankName;
@@ -157,7 +158,7 @@ public class BankAccountActivity extends AppCompatActivity {
         bankAccountName = editText_Account_Name.getText().toString().trim();
         bankAccountNumber = editText_Account_Number.getText().toString().trim();
 
-        chargeBank = new Charge();
+        chargeBank = new ChargeBank();
         chargeBank.setBankCode(bankCode);
         chargeBank.setAccountName(bankAccountName);
         chargeBank.setAccountNumber(bankAccountNumber);

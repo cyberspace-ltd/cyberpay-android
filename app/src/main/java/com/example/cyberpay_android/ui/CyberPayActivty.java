@@ -143,7 +143,10 @@ public class CyberPayActivty extends AppCompatActivity {
         transaction.setAmountInKobo(amountValue);
         transaction.setDescription("Test transaction from Android SDK");
         transaction.setMerchantReference(String.valueOf(generateRandom(10)));
-
+        transaction.setReturnUrl("https://www.google.com/");
+        transaction.setCustomerName("Sample Test");
+        transaction.setCustomerEmail("sampl@gmail.com");
+        transaction.setCustomerMobile("2347039555295");
 
         String expiryDate = editText_Card_Date.getText().toString();
 
@@ -151,11 +154,11 @@ public class CyberPayActivty extends AppCompatActivity {
 
 
         charge = new Charge();
-        charge.setCardNameHolder("Sample Test");
-        charge.setCardExpiryMonth(splitDate[0]);
-        charge.setCardExpiryYear(splitDate[1]);
+//        charge.setCardNameHolder("Sample Test");
+        charge.setExpiryMonth(splitDate[0]);
+        charge.setExpiryYear(splitDate[1]);
         charge.setCardNumber(editText_Card_Number.getText().toString());
-        charge.setCardCvv(editText_Card_cvv.getText().toString());
+        charge.setCvv(editText_Card_cvv.getText().toString());
         if(pinText.length()!= 0 )
             charge.setCardPin(pinText);
 
@@ -163,6 +166,7 @@ public class CyberPayActivty extends AppCompatActivity {
         CyberPaySDK.getInstance().SetTransaction(transaction, new CyberPaySDK.TransactionCallback() {
             @Override
             public void onSuccess(String transactionReference) {
+                Toast.makeText(CyberPayActivty.this, "Reference: " + transactionReference, Toast.LENGTH_LONG).show();
 
                 progressDialog.dismiss();
                 ChargeCard();
@@ -220,6 +224,7 @@ public class CyberPayActivty extends AppCompatActivity {
                 intent.putExtra(OtpActivity.PARAM_TRANSACTION, transaction);
 
                 startActivity(intent);
+                finish();
             }
 
             @Override

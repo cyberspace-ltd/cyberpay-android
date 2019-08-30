@@ -3,8 +3,9 @@ package com.example.cyberpay_android.repository;
 
 import android.support.annotation.NonNull;
 import android.text.TextUtils;
-import android.widget.Toast;
+import android.util.Log;
 
+import com.example.cyberpay_android.models.Card;
 import com.example.cyberpay_android.models.Charge;
 import com.example.cyberpay_android.models.ChargeBank;
 import com.example.cyberpay_android.models.Transaction;
@@ -19,7 +20,9 @@ import com.example.cyberpay_android.network.OtpResponse;
 import com.example.cyberpay_android.network.TransactionResponse;
 import com.example.cyberpay_android.network.VerifyTransactionResponse;
 import com.google.gson.Gson;
+import com.google.gson.JsonObject;
 
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.IOException;
@@ -31,7 +34,6 @@ import okhttp3.RequestBody;
 import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.Callback;
-import retrofit2.HttpException;
 import retrofit2.Response;
 
 
@@ -49,6 +51,7 @@ public class CyberPaySDK {
 
 
     private Transaction transaction;
+    private Card cardModel;
 
     private static String API_KEY = "";
 
@@ -100,6 +103,8 @@ public class CyberPaySDK {
         jsonParams.put("description", transaction.getDescription());
         jsonParams.put("integrationKey", API_KEY);
         jsonParams.put("returnUrl", transaction.getReturnUrl());
+        jsonParams.put("customerEmail", transaction.getCustomerEmail());
+        jsonParams.put("customerMobile", transaction.getCustomerMobile());
 
         RequestBody body = RequestBody.create(okhttp3.MediaType.parse("application/json; charset=utf-8"), (new JSONObject(jsonParams))
                 .toString());
@@ -216,16 +221,22 @@ public class CyberPaySDK {
     public void ChargeCard(final Charge charge, final TransactionCallback transactionCallback) {
 
         Map<String, Object> jsonParams = new HashMap<>();
-        jsonParams.put("Name", charge.getCardNameHolder());
-        jsonParams.put("ExpiryMonth", charge.getCardExpiryMonth());
-        jsonParams.put("ExpiryYear", charge.getCardExpiryYear());
+        jsonParams.put("Name", "Sample Name");
+        jsonParams.put("ExpiryMonth", charge.getExpiryMonth());
+        jsonParams.put("ExpiryYear", charge.getExpiryYear());
         jsonParams.put("CardNumber", charge.getCardNumber());
-        jsonParams.put("CVV", charge.getCardCvv());
+        jsonParams.put("CVV", charge.getCvv());
         jsonParams.put("Reference", transaction.getTransactionReference());
         jsonParams.put("CardPin", charge.getCardPin());
 
         RequestBody body = RequestBody.create(okhttp3.MediaType.parse("application/json; charset=utf-8"), (new JSONObject(jsonParams))
                 .toString());
+
+        JSONObject jsonObject = new JSONObject(jsonParams);
+
+        cardModel = new Card();
+        cardModel.setCard(jsonObject);
+
 
         Call<ApiResponse<ChargeResponse>> call = webService.chargeCard(body);
         call.enqueue(new Callback<ApiResponse<ChargeResponse>>() {
@@ -246,11 +257,13 @@ public class CyberPaySDK {
 
 
                 } else if (response.body().getData() != null && response.body().getData().getStatus().equals("Otp")) {
-                    transaction.setReturnUrl(response.body().getData().getRedirectUrl());
+                    if(response.body().getData().getRedirectUrl() != null)
+                        transaction.setReturnUrl(response.body().getData().getRedirectUrl());
                     transactionCallback.onOtpRequired(transaction);
 
                 } else if (response.body().getData() != null && response.body().getData().getStatus().equals("Secure3D")) {
-                    transaction.setReturnUrl(response.body().getData().getRedirectUrl());
+                    if(response.body().getData().getRedirectUrl() != null)
+                        transaction.setReturnUrl(response.body().getData().getRedirectUrl());
                     transactionCallback.onSecure3dRequired(transaction);
 
                 } else if (response.body().getData() != null && response.body().getData().getStatus().equals("Secure3DMpgs")) {
@@ -276,10 +289,10 @@ public class CyberPaySDK {
     }
 
 
-    public void enrolOtp(final TransactionCallback transactionCallback) {
+    public void enrolOtp(String yourOtp, final TransactionCallback transactionCallback) {
         Map<String, Object> jsonParams = new HashMap<>();
         jsonParams.put("reference", transaction.getTransactionReference());
-        jsonParams.put("otp", "YourOTP");
+        jsonParams.put("otp", yourOtp);
 
         RequestBody body = RequestBody.create(okhttp3.MediaType.parse("application/json; charset=utf-8"), (new JSONObject(jsonParams)).toString());
 
@@ -300,7 +313,7 @@ public class CyberPaySDK {
         });
     }
 
-    public void ChargeBank(final Charge charge, final TransactionCallback transactionCallback) {
+    public void ChargeBank(final ChargeBank charge, final TransactionCallback transactionCallback) {
 
 
         Map<String, Object> jsonParams = new HashMap<>();
@@ -346,6 +359,7 @@ public class CyberPaySDK {
         Map<String, Object> jsonParams = new HashMap<>();
         jsonParams.put("otp", transaction.getOtp());
         jsonParams.put("reference", transaction.getTransactionReference());
+        jsonParams.put("card", cardModel.getCard());
 
         RequestBody body = RequestBody.create(okhttp3.MediaType.parse("application/json; charset=utf-8"), (new JSONObject(jsonParams))
                 .toString());

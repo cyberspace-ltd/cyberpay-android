@@ -7,6 +7,7 @@ import com.example.cyberpay_android.repository.CyberPaySDK;
 import java.util.concurrent.TimeUnit;
 
 import okhttp3.OkHttpClient;
+import okhttp3.logging.HttpLoggingInterceptor;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
@@ -32,8 +33,13 @@ public class ApiClient {
 
             try {
 
+//                HttpLoggingInterceptor interceptor = new HttpLoggingInterceptor();
+//                interceptor.setLevel(HttpLoggingInterceptor.Level.HEADERS);
+//                interceptor.setLevel(HttpLoggingInterceptor.Level.BODY);
+
+
                 OkHttpClient okHttpClient = new OkHttpClient().newBuilder()
-//                        .addInterceptor(provideHttpLoggingInterceptor())
+//                        .addInterceptor(interceptor)
 //                        .cache(provideCache())
                         .connectTimeout(100, TimeUnit.SECONDS)
                         .readTimeout(100, TimeUnit.SECONDS)
