@@ -32,6 +32,8 @@ public class Transaction implements Serializable {
     private String accountNumber;
     private String accountName;
 
+    private String registeredPhoneNumber;
+
 
     public Transaction() {
     }
@@ -144,6 +146,11 @@ public class Transaction implements Serializable {
         this.accountName = accountName;
     }
 
+    public String getRegisteredPhoneNumber() {
+        return registeredPhoneNumber;
+    }
 
-
+    public void setRegisteredPhoneNumber(String registeredPhoneNumber) {
+        this.registeredPhoneNumber = registeredPhoneNumber;
+    }
 }

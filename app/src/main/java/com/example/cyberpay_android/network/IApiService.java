@@ -38,8 +38,11 @@ public interface IApiService {
     @POST("payments/bank")
     Call<ApiResponse<ChargeBankResponse>> chargeBank(@Body RequestBody params);
 
-   @POST("payments/bank/enrol/otp")
-    Call<ApiResponse<ChargeBankResponse>> enrolOtp(@Body RequestBody params);
+   @POST("payments/card/enrol")
+    Call<ApiResponse<ChargeBankResponse>> enrolCardOtp(@Body RequestBody params);
+
+@POST("payments/bank/enrol/otp")
+    Call<ApiResponse<ChargeBankResponse>> enrolBankOtp(@Body RequestBody params);
 
     @GET("banks")
     Call<ApiResponse<List<BankResponse>>> getBank();

@@ -189,6 +189,11 @@ public class CyberPayActivty extends AppCompatActivity {
             }
 
             @Override
+            public void onEnrolOtp(Transaction transaction) {
+
+            }
+
+            @Override
             public void onError(Throwable error, Transaction transaction) {
 
                 Toast.makeText(CyberPayActivty.this, "Error: " + error, Toast.LENGTH_LONG).show();
@@ -247,6 +252,11 @@ public class CyberPayActivty extends AppCompatActivity {
                 intent.putExtra(MakePaymentActivity.PARAM_TRANSACTION, transaction.getReturnUrl());
                 startActivity(intent);
                 finish();
+            }
+
+            @Override
+            public void onEnrolOtp(Transaction transaction) {
+
             }
 
             @Override

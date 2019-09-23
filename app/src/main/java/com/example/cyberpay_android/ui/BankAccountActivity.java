@@ -105,6 +105,11 @@ public class BankAccountActivity extends AppCompatActivity {
             }
 
             @Override
+            public void onEnrolOtp(Transaction transaction) {
+
+            }
+
+            @Override
             public void onError(Throwable error, Transaction transaction) {
 
             }
@@ -191,6 +196,11 @@ public class BankAccountActivity extends AppCompatActivity {
             }
 
             @Override
+            public void onEnrolOtp(Transaction transaction) {
+
+            }
+
+            @Override
             public void onError(Throwable error, Transaction transaction) {
 
                 Toast.makeText(BankAccountActivity.this, "Error: " + error, Toast.LENGTH_LONG).show();
@@ -237,6 +247,11 @@ public class BankAccountActivity extends AppCompatActivity {
 
             @Override
             public void onSecure3DMpgsRequired(Transaction transaction) {
+
+            }
+
+            @Override
+            public void onEnrolOtp(Transaction transaction) {
 
             }
 

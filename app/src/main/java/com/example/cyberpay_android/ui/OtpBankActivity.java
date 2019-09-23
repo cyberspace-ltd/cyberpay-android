@@ -89,6 +89,11 @@ public class OtpBankActivity extends AppCompatActivity implements CyberPaySDK.Tr
     }
 
     @Override
+    public void onEnrolOtp(Transaction transaction) {
+
+    }
+
+    @Override
     public void onError(Throwable error, Transaction transaction) {
         Toast.makeText(this, "Error: " + transaction.getTransactionReference(), Toast.LENGTH_LONG).show();
 

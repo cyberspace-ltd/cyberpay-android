@@ -89,6 +89,11 @@ public class OtpActivity extends AppCompatActivity implements CyberPaySDK.Transa
     }
 
     @Override
+    public void onEnrolOtp(Transaction transaction) {
+
+    }
+
+    @Override
     public void onError(Throwable error, Transaction transaction) {
         Toast.makeText(this, "Error: " + error.getMessage(), Toast.LENGTH_LONG).show();
         finish();

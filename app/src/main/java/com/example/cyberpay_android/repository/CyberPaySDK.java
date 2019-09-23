@@ -3,7 +3,6 @@ package com.example.cyberpay_android.repository;
 
 import android.support.annotation.NonNull;
 import android.text.TextUtils;
-import android.util.Log;
 
 import com.example.cyberpay_android.models.Card;
 import com.example.cyberpay_android.models.Charge;
@@ -20,9 +19,7 @@ import com.example.cyberpay_android.network.OtpResponse;
 import com.example.cyberpay_android.network.TransactionResponse;
 import com.example.cyberpay_android.network.VerifyTransactionResponse;
 import com.google.gson.Gson;
-import com.google.gson.JsonObject;
 
-import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.IOException;
@@ -251,6 +248,12 @@ public class CyberPaySDK {
                     transactionCallback.onSuccess(response.body().getData().getReference());
 
                 }
+
+//                if (response.body().getData() != null && response.body().getData().getStatus().equals("ProvidePin")) {
+//
+//                    transactionCallback.onProvidePin(cardModel);
+//
+//                }
                 if (response.body().getData() != null && response.body().getData().getStatus().equals("Successful")) {
 
                     transactionCallback.onSuccess(response.body().getData().getReference());
@@ -260,6 +263,11 @@ public class CyberPaySDK {
                     if(response.body().getData().getRedirectUrl() != null)
                         transaction.setReturnUrl(response.body().getData().getRedirectUrl());
                     transactionCallback.onOtpRequired(transaction);
+
+                } else if (response.body().getData() != null && response.body().getData().getStatus().equals("EnrollOtp")) {
+                    if(response.body().getData().getRedirectUrl() != null)
+                        transaction.setReturnUrl(response.body().getData().getRedirectUrl());
+                    transactionCallback.onEnrolOtp(transaction);
 
                 } else if (response.body().getData() != null && response.body().getData().getStatus().equals("Secure3D")) {
                     if(response.body().getData().getRedirectUrl() != null)
@@ -289,14 +297,40 @@ public class CyberPaySDK {
     }
 
 
-    public void enrolOtp(String yourOtp, final TransactionCallback transactionCallback) {
+    public void enrolBankOtp(String yourOtp, final TransactionCallback transactionCallback) {
         Map<String, Object> jsonParams = new HashMap<>();
         jsonParams.put("reference", transaction.getTransactionReference());
         jsonParams.put("otp", yourOtp);
 
         RequestBody body = RequestBody.create(okhttp3.MediaType.parse("application/json; charset=utf-8"), (new JSONObject(jsonParams)).toString());
 
-        Call<ApiResponse<ChargeBankResponse>> call = webService.enrolOtp(body);
+        Call<ApiResponse<ChargeBankResponse>> call = webService.enrolBankOtp(body);
+        call.enqueue(new Callback<ApiResponse<ChargeBankResponse>>() {
+            @Override
+            public void onResponse(Call<ApiResponse<ChargeBankResponse>> call, Response<ApiResponse<ChargeBankResponse>> response) {
+                if (response.body().getData() != null && response.body().getData().getStatus().equals("EnrollOtp")) {
+                    transactionCallback.onOtpRequired(transaction);
+
+                }
+            }
+
+            @Override
+            public void onFailure(Call<ApiResponse<ChargeBankResponse>> call, Throwable t) {
+
+            }
+        });
+    }
+
+public void enrolCardOtp(final Transaction transaction, final TransactionCallback transactionCallback) {
+        Map<String, Object> jsonParams = new HashMap<>();
+        jsonParams.put("reference", transaction.getTransactionReference());
+        jsonParams.put("registeredPhoneNumber", transaction.getRegisteredPhoneNumber());
+        jsonParams.put("cardModel", cardModel.getCard());
+
+
+    RequestBody body = RequestBody.create(okhttp3.MediaType.parse("application/json; charset=utf-8"), (new JSONObject(jsonParams)).toString());
+
+        Call<ApiResponse<ChargeBankResponse>> call = webService.enrolBankOtp(body);
         call.enqueue(new Callback<ApiResponse<ChargeBankResponse>>() {
             @Override
             public void onResponse(Call<ApiResponse<ChargeBankResponse>> call, Response<ApiResponse<ChargeBankResponse>> response) {
@@ -478,6 +512,8 @@ public class CyberPaySDK {
 
     public interface TransactionCallback {
 
+//        void onProvidePin(Charge charge);
+
         void onSuccess(String transactionReference);
 
         void onOtpRequired(Transaction transaction);
@@ -485,6 +521,8 @@ public class CyberPaySDK {
         void onSecure3dRequired(Transaction transaction);
 
         void onSecure3DMpgsRequired(Transaction transaction);
+
+        void onEnrolOtp(Transaction transaction);
 
         void onError(Throwable error, Transaction transaction);
 
