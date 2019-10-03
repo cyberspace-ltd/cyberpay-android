@@ -9,7 +9,7 @@ public class Charge implements Serializable {
 
 //    private String accountName;
 
-//    private String reference;
+    private String reference;
 
 
 //    private String accountNumber;
@@ -80,13 +80,13 @@ public class Charge implements Serializable {
 //        this.accountName = accountName;
 //    }
 
-//    public String getReference() {
-//        return reference;
-//    }
-//
-//    public void setReference(String reference) {
-//        this.reference = reference;
-//    }
+    public String getReference() {
+        return reference;
+    }
+
+    public void setReference(String reference) {
+        this.reference = reference;
+    }
 
 
 //    public String getAccountNumber() {

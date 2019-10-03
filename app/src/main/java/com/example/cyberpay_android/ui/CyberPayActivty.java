@@ -168,6 +168,7 @@ public class CyberPayActivty extends AppCompatActivity {
             public void onSuccess(String transactionReference) {
                 Toast.makeText(CyberPayActivty.this, "Reference: " + transactionReference, Toast.LENGTH_LONG).show();
 
+                charge.setReference(transaction.getTransactionReference());
                 progressDialog.dismiss();
                 ChargeCard();
             }

@@ -133,7 +133,7 @@ public class CyberPaySDK {
             public void onFailure(@NonNull Call<ApiResponse<TransactionResponse>> call, @NonNull Throwable t) {
                 transactionCallback.onError(t, transaction);
             }
-        }); 
+        });
     }
 
 
@@ -223,7 +223,7 @@ public class CyberPaySDK {
         jsonParams.put("ExpiryYear", charge.getExpiryYear());
         jsonParams.put("CardNumber", charge.getCardNumber());
         jsonParams.put("CVV", charge.getCvv());
-        jsonParams.put("Reference", transaction.getTransactionReference());
+        jsonParams.put("Reference", charge.getReference());
         jsonParams.put("CardPin", charge.getCardPin());
 
         RequestBody body = RequestBody.create(okhttp3.MediaType.parse("application/json; charset=utf-8"), (new JSONObject(jsonParams))
