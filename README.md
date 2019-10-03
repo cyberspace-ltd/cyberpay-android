@@ -87,11 +87,12 @@ public class MainActivity extends AppCompatActivity {
 
 //The SetTransaction method returns a transaction Reference in the `onSuccess()` callback. Assign this transaction reference to the `transactionParameter` provided in the previous 
 //step and call the charge card method
-
 CyberPaySDK.getInstance().SetTransaction(transaction, new CyberPaySDK.TransactionCallback() {
             @Override
             public void onSuccess(String transactionReference) {
-
+            
+            //Remember to set transaction Reference in Transaction model
+                charge.setReference(transaction.getTransactionReference());
                 ChargeCard();
             }
 
@@ -102,9 +103,29 @@ CyberPaySDK.getInstance().SetTransaction(transaction, new CyberPaySDK.Transactio
             }
 
             @Override
+            public void onSecure3dRequired(Transaction transaction) {
+
+            }
+
+            @Override
+            public void onSecure3DMpgsRequired(Transaction transaction) {
+
+            }
+
+            @Override
+            public void onEnrolOtp(Transaction transaction) {
+
+            }
+
+            @Override
             public void onError(Throwable error, Transaction transaction) {
 
-                Toast.makeText(CyberPayActivty.this, "Error: " + transaction.getTransactionReference(), Toast.LENGTH_LONG).show();
+                Toast.makeText(CyberPayActivty.this, "Error: " + error, Toast.LENGTH_LONG).show();
+
+            }
+
+            @Override
+            public void onBank(List<BankResponse> bankResponses) {
 
             }
         });
@@ -113,11 +134,12 @@ CyberPaySDK.getInstance().SetTransaction(transaction, new CyberPaySDK.Transactio
 
 ```java
 
-       CyberPaySDK.getInstance().ChargeCard(charge, new CyberPaySDK.TransactionCallback() {
+        CyberPaySDK.getInstance().ChargeCard(charge, new CyberPaySDK.TransactionCallback() {
             @Override
             public void onSuccess(String transactionReference) {
 
                 //This is called only when a transaction is successful
+
             }
 
 
@@ -127,12 +149,42 @@ CyberPaySDK.getInstance().SetTransaction(transaction, new CyberPaySDK.Transactio
             }
 
             @Override
+            public void onSecure3dRequired(Transaction transaction) {
+                
+                // This is called only when onSecure3dRequired is required to 
+                // complete the transaction in a webview with the return URl
+
+                transaction.getReturnUrl()
+            }
+
+            @Override
+            public void onSecure3DMpgsRequired(Transaction transaction) {
+                // This is called only when onSecure3DMpgsRequired is required to 
+                // complete the transaction in a webview with the return URl
+                
+                transaction.getReturnUrl().
+            }
+
+            @Override
+            public void onEnrolOtp(Transaction transaction) {
+
+            }
+
+            @Override
             public void onError(Throwable error, Transaction transaction) {
 
               //This is called only when an error occurs
+
+            }
+
+            @Override
+            public void onBank(List<BankResponse> bankResponses) {
+              //This is called only on bank Transaction
+
             }
         });
 
+     
 ```
 **Note**: The chargeCard() method returns 3 callbacks: `onSuccess()`, which means your transaction was successful and returns the transaction Reference, `onOtpRequired()`, which means an otp is required to verify this transaction,
 and also returns the transaction reference, `onError()`, which returns an error message, when chargeCard() fails.
