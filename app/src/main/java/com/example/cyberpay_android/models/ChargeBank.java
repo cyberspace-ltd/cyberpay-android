@@ -7,6 +7,10 @@ public class ChargeBank {
     private String reference;
     private String accountName;
 
+    private String registeredPhoneNumber;
+    private String Otp;//only if otp is required
+
+
     public ChargeBank() {
     }
 
@@ -40,6 +44,22 @@ public class ChargeBank {
 
     public void setAccountNumber(String accountNumber) {
         this.accountNumber = accountNumber;
+    }
+
+    public String getRegisteredPhoneNumber() {
+        return registeredPhoneNumber;
+    }
+
+    public void setRegisteredPhoneNumber(String registeredPhoneNumber) {
+        this.registeredPhoneNumber = registeredPhoneNumber;
+    }
+
+    public String getOtp() {
+        return Otp;
+    }
+
+    public void setOtp(String otp) {
+        this.Otp = otp;
     }
 
 }

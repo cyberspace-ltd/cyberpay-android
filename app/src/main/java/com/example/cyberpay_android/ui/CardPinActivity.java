@@ -1,8 +1,8 @@
 package com.example.cyberpay_android.ui;
 
 import android.content.Intent;
-import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.View;
@@ -15,27 +15,22 @@ import com.example.cyberpay_android.models.ChargeBank;
 import com.example.cyberpay_android.models.Transaction;
 import com.example.cyberpay_android.network.BankResponse;
 import com.example.cyberpay_android.repository.CyberPaySDK;
-import com.example.cyberpay_android.utils.AppUtility;
 
 import java.util.List;
 
-import dmax.dialog.SpotsDialog;
-
-public class OtpBankActivity extends AppCompatActivity implements CyberPaySDK.TransactionCallback {
-
+public class CardPinActivity extends AppCompatActivity implements CyberPaySDK.TransactionCallback {
 
     public static String PARAM_TRANSACTION = "PARAM_TRANSACTION";
 
-    ChargeBank transaction;
 
+
+    Charge charge;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_otp);
+        setContentView(R.layout.activity_card_pin);
 
-
-        transaction = (ChargeBank) getIntent().getSerializableExtra(PARAM_TRANSACTION);
-
+        charge = (Charge) getIntent().getSerializableExtra(PARAM_TRANSACTION);
 
         final PinEntryEditText txtPinEntry = findViewById(R.id.pinEditText);
         txtPinEntry.addTextChangedListener(new TextWatcher() {
@@ -61,8 +56,8 @@ public class OtpBankActivity extends AppCompatActivity implements CyberPaySDK.Tr
             @Override
             public void onClick(View v) {
 
-                transaction.setOtp(txtPinEntry.getText().toString());
-                CyberPaySDK.getInstance().VerifyBankOtp(transaction, new CyberPaySDK.TransactionCallback() {
+                charge.setCardPin(txtPinEntry.getText().toString());
+                CyberPaySDK.getInstance().ChargeCard(charge, new CyberPaySDK.TransactionCallback() {
                     @Override
                     public void onProvidePin(Charge charge) {
 
@@ -70,8 +65,7 @@ public class OtpBankActivity extends AppCompatActivity implements CyberPaySDK.Tr
 
                     @Override
                     public void onSuccess(String transactionReference) {
-                        Toast.makeText(OtpBankActivity.this, "Transaction successful: Transaction Ref: " + transactionReference, Toast.LENGTH_LONG).show();
-
+                        Toast.makeText(CardPinActivity.this, "Reference: " + transactionReference, Toast.LENGTH_LONG).show();
                     }
 
                     @Override
@@ -101,9 +95,6 @@ public class OtpBankActivity extends AppCompatActivity implements CyberPaySDK.Tr
 
                     @Override
                     public void onError(Throwable error, Transaction transaction) {
-                        Toast.makeText(OtpBankActivity.this, "Error: " + error.getMessage(), Toast.LENGTH_LONG).show();
-                        finish();
-
 
                     }
 
@@ -114,8 +105,8 @@ public class OtpBankActivity extends AppCompatActivity implements CyberPaySDK.Tr
                 });
             }
         });
-    }
 
+    }
 
     @Override
     public void onProvidePin(Charge charge) {
@@ -124,15 +115,12 @@ public class OtpBankActivity extends AppCompatActivity implements CyberPaySDK.Tr
 
     @Override
     public void onSuccess(String transactionReference) {
-        Toast.makeText(this, "Transaction successful: Transaction Ref: " + transactionReference, Toast.LENGTH_LONG).show();
-        AppUtility.okDialog(getApplicationContext(),
-                "Success", "Transaction successful: Transaction Ref: " + transaction.getReference());
 
     }
 
     @Override
     public void onOtpRequired(Charge transaction, Card card) {
-        //not needed
+
     }
 
     @Override
@@ -157,7 +145,6 @@ public class OtpBankActivity extends AppCompatActivity implements CyberPaySDK.Tr
 
     @Override
     public void onError(Throwable error, Transaction transaction) {
-        Toast.makeText(this, "Error: " + transaction.getTransactionReference(), Toast.LENGTH_LONG).show();
 
     }
 

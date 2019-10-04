@@ -5,13 +5,20 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.view.View;
 import android.widget.Toast;
 
 import com.example.cyberpay_android.R;
+import com.example.cyberpay_android.models.Card;
+import com.example.cyberpay_android.models.Charge;
+import com.example.cyberpay_android.models.ChargeBank;
 import com.example.cyberpay_android.models.Transaction;
 import com.example.cyberpay_android.network.BankResponse;
 import com.example.cyberpay_android.repository.CyberPaySDK;
+
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.util.List;
 
@@ -21,18 +28,35 @@ public class OtpActivity extends AppCompatActivity implements CyberPaySDK.Transa
 
 
     public static String PARAM_TRANSACTION = "PARAM_TRANSACTION";
+    public static String PARAM_CARD = "PARAM_CARD";
 
 
 
-    Transaction transaction;
+    Charge charge;
+    Card cardmodel;
+    String card;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_otp);
 
+        Bundle bundle = getIntent().getExtras();
 
-        transaction = (Transaction) getIntent().getSerializableExtra(PARAM_TRANSACTION);
+        cardmodel = new Card();
+
+        card = bundle.getString(PARAM_CARD);
+        Log.d("CARD", card);
+        charge = (Charge) getIntent().getSerializableExtra(PARAM_TRANSACTION);
+
+        JSONObject jsonObject = null;
+        try {
+            jsonObject = new JSONObject(card);
+            cardmodel.setCard(jsonObject);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
 
 
         final PinEntryEditText txtPinEntry = findViewById(R.id.pinEditText);
@@ -59,12 +83,64 @@ public class OtpActivity extends AppCompatActivity implements CyberPaySDK.Transa
             @Override
             public void onClick(View v) {
 
-                transaction.setOtp(txtPinEntry.getText().toString());
-                CyberPaySDK.getInstance().VerifyOtp(transaction, OtpActivity.this);
+                charge.setOtp(txtPinEntry.getText().toString());
+                CyberPaySDK.getInstance().VerifyOtp(charge, cardmodel, new CyberPaySDK.TransactionCallback() {
+                    @Override
+                    public void onProvidePin(Charge charge) {
+
+                    }
+
+                    @Override
+                    public void onSuccess(String transactionReference) {
+
+                        Toast.makeText(OtpActivity.this, "Reference: " + transactionReference, Toast.LENGTH_LONG).show();
+
+                    }
+
+                    @Override
+                    public void onOtpRequired(Charge transaction, Card card) {
+
+                    }
+
+                    @Override
+                    public void onBankOtpRequired(ChargeBank transaction) {
+
+                    }
+
+                    @Override
+                    public void onSecure3dRequired(Charge transaction) {
+
+                    }
+
+                    @Override
+                    public void onSecure3DMpgsRequired(Charge transaction) {
+
+                    }
+
+                    @Override
+                    public void onEnrolOtp(Charge transaction) {
+
+                    }
+
+                    @Override
+                    public void onError(Throwable error, Transaction transaction) {
+
+                    }
+
+                    @Override
+                    public void onBank(List<BankResponse> bankResponses) {
+
+                    }
+                });
             }
         });
     }
 
+
+    @Override
+    public void onProvidePin(Charge charge) {
+
+    }
 
     @Override
     public void onSuccess(String transactionReference) {
@@ -74,22 +150,27 @@ public class OtpActivity extends AppCompatActivity implements CyberPaySDK.Transa
     }
 
     @Override
-    public void onOtpRequired(Transaction transaction) {
+    public void onOtpRequired(Charge transaction, Card card) {
         //not needed
     }
 
     @Override
-    public void onSecure3dRequired(Transaction transaction) {
+    public void onBankOtpRequired(ChargeBank transaction) {
 
     }
 
     @Override
-    public void onSecure3DMpgsRequired(Transaction transaction) {
+    public void onSecure3dRequired(Charge transaction) {
 
     }
 
     @Override
-    public void onEnrolOtp(Transaction transaction) {
+    public void onSecure3DMpgsRequired(Charge transaction) {
+
+    }
+
+    @Override
+    public void onEnrolOtp(Charge transaction) {
 
     }
 

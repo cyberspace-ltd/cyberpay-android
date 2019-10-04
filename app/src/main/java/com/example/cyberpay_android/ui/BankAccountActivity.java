@@ -10,6 +10,7 @@ import android.widget.Toast;
 
 import com.example.cyberpay_android.R;
 import com.example.cyberpay_android.adapter.BankSpinnerAdapter;
+import com.example.cyberpay_android.models.Card;
 import com.example.cyberpay_android.models.Charge;
 import com.example.cyberpay_android.models.ChargeBank;
 import com.example.cyberpay_android.models.Transaction;
@@ -85,27 +86,37 @@ public class BankAccountActivity extends AppCompatActivity {
     private void loadBanks() {
         CyberPaySDK.getInstance().getBank(new CyberPaySDK.TransactionCallback() {
             @Override
+            public void onProvidePin(Charge charge) {
+
+            }
+
+            @Override
             public void onSuccess(String transactionReference) {
 
             }
 
             @Override
-            public void onOtpRequired(Transaction transaction) {
+            public void onOtpRequired(Charge transaction, Card card) {
 
             }
 
             @Override
-            public void onSecure3dRequired(Transaction transaction) {
+            public void onBankOtpRequired(ChargeBank transaction) {
 
             }
 
             @Override
-            public void onSecure3DMpgsRequired(Transaction transaction) {
+            public void onSecure3dRequired(Charge transaction) {
 
             }
 
             @Override
-            public void onEnrolOtp(Transaction transaction) {
+            public void onSecure3DMpgsRequired(Charge transaction) {
+
+            }
+
+            @Override
+            public void onEnrolOtp(Charge transaction) {
 
             }
 
@@ -171,6 +182,11 @@ public class BankAccountActivity extends AppCompatActivity {
 
         CyberPaySDK.getInstance().SetTransaction(transaction, new CyberPaySDK.TransactionCallback() {
             @Override
+            public void onProvidePin(Charge charge) {
+
+            }
+
+            @Override
             public void onSuccess(String transactionReference) {
                 Toast.makeText(BankAccountActivity.this, "Transaction successful: Transaction Ref: " + transactionReference, Toast.LENGTH_LONG).show();
 
@@ -180,25 +196,30 @@ public class BankAccountActivity extends AppCompatActivity {
             }
 
             @Override
-            public void onOtpRequired(Transaction transaction) {
-
-                //not needed for set transaction
-            }
-
-            @Override
-            public void onSecure3dRequired(Transaction transaction) {
+            public void onOtpRequired(Charge transaction, Card card) {
 
             }
 
             @Override
-            public void onSecure3DMpgsRequired(Transaction transaction) {
+            public void onBankOtpRequired(ChargeBank transaction) {
 
             }
 
             @Override
-            public void onEnrolOtp(Transaction transaction) {
+            public void onSecure3dRequired(Charge transaction) {
 
             }
+
+            @Override
+            public void onSecure3DMpgsRequired(Charge transaction) {
+
+            }
+
+            @Override
+            public void onEnrolOtp(Charge transaction) {
+
+            }
+
 
             @Override
             public void onError(Throwable error, Transaction transaction) {
@@ -219,6 +240,11 @@ public class BankAccountActivity extends AppCompatActivity {
 
         CyberPaySDK.getInstance().ChargeBank(chargeBank, new CyberPaySDK.TransactionCallback() {
             @Override
+            public void onProvidePin(Charge charge) {
+
+            }
+
+            @Override
             public void onSuccess(String transactionReference) {
 
 
@@ -229,10 +255,10 @@ public class BankAccountActivity extends AppCompatActivity {
 
 
             @Override
-            public void onOtpRequired(Transaction transaction) {
+            public void onOtpRequired(Charge transaction, Card card) {
                 // This is called only when otp is required
 
-                Toast.makeText(BankAccountActivity.this, "Otp Required Transaction Ref: " + transaction.getTransactionReference(), Toast.LENGTH_LONG).show();
+                Toast.makeText(BankAccountActivity.this, "Otp Required Transaction Ref: " + transaction.getReference(), Toast.LENGTH_LONG).show();
 
                 Intent intent = new Intent(BankAccountActivity.this, OtpBankActivity.class);
                 intent.putExtra(OtpActivity.PARAM_TRANSACTION, transaction);
@@ -241,17 +267,22 @@ public class BankAccountActivity extends AppCompatActivity {
             }
 
             @Override
-            public void onSecure3dRequired(Transaction transaction) {
+            public void onBankOtpRequired(ChargeBank transaction) {
 
             }
 
             @Override
-            public void onSecure3DMpgsRequired(Transaction transaction) {
+            public void onSecure3dRequired(Charge transaction) {
 
             }
 
             @Override
-            public void onEnrolOtp(Transaction transaction) {
+            public void onSecure3DMpgsRequired(Charge transaction) {
+
+            }
+
+            @Override
+            public void onEnrolOtp(Charge transaction) {
 
             }
 

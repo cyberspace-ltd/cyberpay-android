@@ -19,20 +19,14 @@ public class Transaction implements Serializable {
     private String customerMobile;
 
 
-    private JSONObject card;
     private String returnUrl;
 
     private String description;
 
     private String transactionReference;//gotten after set charge
 
-    private String Otp;//only if otp is required
 
-    private String bankCode;
-    private String accountNumber;
-    private String accountName;
 
-    private String registeredPhoneNumber;
 
 
     public Transaction() {
@@ -113,44 +107,4 @@ public class Transaction implements Serializable {
         this.returnUrl = returnUrl;
     }
 
-    public String getOtp() {
-        return Otp;
-    }
-
-    public void setOtp(String otp) {
-        this.Otp = otp;
-    }
-
-
-    public String getBankCode() {
-        return bankCode;
-    }
-
-    public void setBankCode(String bankCode) {
-        this.bankCode = bankCode;
-    }
-
-    public String getAccountNumber() {
-        return accountNumber;
-    }
-
-    public void setAccountNumber(String accountNumber) {
-        this.accountNumber = accountNumber;
-    }
-
-    public String getAccountName() {
-        return accountName;
-    }
-
-    public void setAccountName(String accountName) {
-        this.accountName = accountName;
-    }
-
-    public String getRegisteredPhoneNumber() {
-        return registeredPhoneNumber;
-    }
-
-    public void setRegisteredPhoneNumber(String registeredPhoneNumber) {
-        this.registeredPhoneNumber = registeredPhoneNumber;
-    }
 }

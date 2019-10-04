@@ -243,40 +243,44 @@ public class CyberPaySDK {
                 if (response.body() == null)
                     return;
 
+                if(response.body().getData().getRedirectUrl() != null)
+                    charge.setReturnUrl(response.body().getData().getRedirectUrl());
+
                 if (response.body().getData() != null && response.body().getData().getStatus().equals("Success")) {
 
                     transactionCallback.onSuccess(response.body().getData().getReference());
 
                 }
 
-//                if (response.body().getData() != null && response.body().getData().getStatus().equals("ProvidePin")) {
-//
-//                    transactionCallback.onProvidePin(cardModel);
-//
-//                }
+                if (response.body().getData() != null && response.body().getData().getStatus().equals("ProvidePin")) {
+
+                    transactionCallback.onProvidePin(charge);
+
+                }
                 if (response.body().getData() != null && response.body().getData().getStatus().equals("Successful")) {
 
                     transactionCallback.onSuccess(response.body().getData().getReference());
 
 
                 } else if (response.body().getData() != null && response.body().getData().getStatus().equals("Otp")) {
-                    if(response.body().getData().getRedirectUrl() != null)
-                        transaction.setReturnUrl(response.body().getData().getRedirectUrl());
-                    transactionCallback.onOtpRequired(transaction);
+//                    if(response.body().getData().getRedirectUrl() != null)
+//                        charge.setReturnUrl(response.body().getData().getRedirectUrl());
+                    transactionCallback.onOtpRequired(charge, cardModel);
 
                 } else if (response.body().getData() != null && response.body().getData().getStatus().equals("EnrollOtp")) {
-                    if(response.body().getData().getRedirectUrl() != null)
-                        transaction.setReturnUrl(response.body().getData().getRedirectUrl());
-                    transactionCallback.onEnrolOtp(transaction);
+//                    if(response.body().getData().getRedirectUrl() != null)
+//                        charge.setReturnUrl(response.body().getData().getRedirectUrl());
+                    transactionCallback.onEnrolOtp(charge);
 
                 } else if (response.body().getData() != null && response.body().getData().getStatus().equals("Secure3D")) {
-                    if(response.body().getData().getRedirectUrl() != null)
-                        transaction.setReturnUrl(response.body().getData().getRedirectUrl());
-                    transactionCallback.onSecure3dRequired(transaction);
+//                    if(response.body().getData().getRedirectUrl() != null)
+//                        charge.setReturnUrl(response.body().getData().getRedirectUrl());
+                    transactionCallback.onSecure3dRequired(charge);
 
                 } else if (response.body().getData() != null && response.body().getData().getStatus().equals("Secure3DMpgs")) {
-                    transaction.setReturnUrl(response.body().getData().getRedirectUrl());
-                    transactionCallback.onSecure3DMpgsRequired(transaction);
+//                    if(response.body().getData().getRedirectUrl() != null)
+//                        charge.setReturnUrl(response.body().getData().getRedirectUrl());
+                    transactionCallback.onSecure3DMpgsRequired(charge);
 
                 } else {
 
@@ -297,10 +301,10 @@ public class CyberPaySDK {
     }
 
 
-    public void enrolBankOtp(String yourOtp, final TransactionCallback transactionCallback) {
+    public void enrolBankOtp(Charge charge, final TransactionCallback transactionCallback) {
         Map<String, Object> jsonParams = new HashMap<>();
         jsonParams.put("reference", transaction.getTransactionReference());
-        jsonParams.put("otp", yourOtp);
+        jsonParams.put("otp", charge.getOtp());
 
         RequestBody body = RequestBody.create(okhttp3.MediaType.parse("application/json; charset=utf-8"), (new JSONObject(jsonParams)).toString());
 
@@ -309,7 +313,7 @@ public class CyberPaySDK {
             @Override
             public void onResponse(Call<ApiResponse<ChargeBankResponse>> call, Response<ApiResponse<ChargeBankResponse>> response) {
                 if (response.body().getData() != null && response.body().getData().getStatus().equals("EnrollOtp")) {
-                    transactionCallback.onOtpRequired(transaction);
+                    transactionCallback.onOtpRequired(charge, cardModel);
 
                 }
             }
@@ -321,10 +325,11 @@ public class CyberPaySDK {
         });
     }
 
-public void enrolCardOtp(final Transaction transaction, final TransactionCallback transactionCallback) {
+public void enrolCardOtp(final Charge charge, Card card, final TransactionCallback transactionCallback) {
+        this.cardModel = card;
         Map<String, Object> jsonParams = new HashMap<>();
-        jsonParams.put("reference", transaction.getTransactionReference());
-        jsonParams.put("registeredPhoneNumber", transaction.getRegisteredPhoneNumber());
+        jsonParams.put("reference", charge.getReference());
+        jsonParams.put("registeredPhoneNumber", charge.getRegisteredPhoneNumber());
         jsonParams.put("cardModel", cardModel.getCard());
 
 
@@ -335,7 +340,7 @@ public void enrolCardOtp(final Transaction transaction, final TransactionCallbac
             @Override
             public void onResponse(Call<ApiResponse<ChargeBankResponse>> call, Response<ApiResponse<ChargeBankResponse>> response) {
                 if (response.body().getData() != null && response.body().getData().getStatus().equals("EnrollOtp")) {
-                    transactionCallback.onOtpRequired(transaction);
+                    transactionCallback.onOtpRequired(charge, cardModel);
 
                 }
             }
@@ -353,7 +358,7 @@ public void enrolCardOtp(final Transaction transaction, final TransactionCallbac
         Map<String, Object> jsonParams = new HashMap<>();
         jsonParams.put("BankCode", charge.getBankCode());
         jsonParams.put("AccountNumber", charge.getAccountNumber());
-        jsonParams.put("Reference", transaction.getTransactionReference());
+        jsonParams.put("Reference", charge.getReference());
         jsonParams.put("AccountName", charge.getAccountName());
 
         RequestBody body = RequestBody.create(okhttp3.MediaType.parse("application/json; charset=utf-8"), (new JSONObject(jsonParams))
@@ -368,7 +373,7 @@ public void enrolCardOtp(final Transaction transaction, final TransactionCallbac
                     return;
 
                 if (response.body().getData() != null && response.body().getData().getStatus().equals("Otp")) {
-                    transactionCallback.onOtpRequired(transaction);
+                    transactionCallback.onBankOtpRequired(charge);
 
                 } else {
 
@@ -388,11 +393,13 @@ public void enrolCardOtp(final Transaction transaction, final TransactionCallbac
 
     }
 
-    public void VerifyOtp(final Transaction transaction, final TransactionCallback transactionCallback) {
+    public void VerifyOtp(final Charge charge, final Card card, final TransactionCallback transactionCallback) {
+
+        this.cardModel = card;
 
         Map<String, Object> jsonParams = new HashMap<>();
-        jsonParams.put("otp", transaction.getOtp());
-        jsonParams.put("reference", transaction.getTransactionReference());
+        jsonParams.put("otp", charge.getOtp());
+        jsonParams.put("reference", charge.getReference());
         jsonParams.put("card", cardModel.getCard());
 
         RequestBody body = RequestBody.create(okhttp3.MediaType.parse("application/json; charset=utf-8"), (new JSONObject(jsonParams))
@@ -447,19 +454,19 @@ public void enrolCardOtp(final Transaction transaction, final TransactionCallbac
     }
 
 
-    public void VerifyBankOtp(final Transaction transaction, final TransactionCallback transactionCallback) {
+    public void VerifyBankOtp(final ChargeBank chargeBank, final TransactionCallback transactionCallback) {
 
         Map<String, Object> jsonParams = new HashMap<>();
 
-        jsonParams.put("BankCode", transaction.getBankCode());
-        jsonParams.put("AccountName", transaction.getAccountName());
-        jsonParams.put("AccountNumber", transaction.getAccountNumber());
-        jsonParams.put("Reference", transaction.getTransactionReference());
+        jsonParams.put("BankCode", chargeBank.getBankCode());
+        jsonParams.put("AccountName", chargeBank.getAccountName());
+        jsonParams.put("AccountNumber", chargeBank.getAccountNumber());
+        jsonParams.put("Reference", chargeBank.getReference());
 
         RequestBody body = RequestBody.create(okhttp3.MediaType.parse("application/json; charset=utf-8"), (new JSONObject(jsonParams))
                 .toString());
 
-        Call<ApiResponse<OtpResponse>> call = webService.verifyBankOtp(body, transaction.getOtp());
+        Call<ApiResponse<OtpResponse>> call = webService.verifyBankOtp(body, chargeBank.getOtp());
 
         call.enqueue(new Callback<ApiResponse<OtpResponse>>() {
             @Override
@@ -512,17 +519,19 @@ public void enrolCardOtp(final Transaction transaction, final TransactionCallbac
 
     public interface TransactionCallback {
 
-//        void onProvidePin(Charge charge);
+        void onProvidePin(Charge charge);
 
         void onSuccess(String transactionReference);
 
-        void onOtpRequired(Transaction transaction);
+        void onOtpRequired(Charge transaction, Card card);
 
-        void onSecure3dRequired(Transaction transaction);
+        void onBankOtpRequired(ChargeBank transaction);
 
-        void onSecure3DMpgsRequired(Transaction transaction);
+        void onSecure3dRequired(Charge transaction);
 
-        void onEnrolOtp(Transaction transaction);
+        void onSecure3DMpgsRequired(Charge transaction);
+
+        void onEnrolOtp(Charge transaction);
 
         void onError(Throwable error, Transaction transaction);
 

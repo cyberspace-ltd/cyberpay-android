@@ -12,7 +12,9 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.cyberpay_android.R;
+import com.example.cyberpay_android.models.Card;
 import com.example.cyberpay_android.models.Charge;
+import com.example.cyberpay_android.models.ChargeBank;
 import com.example.cyberpay_android.models.Transaction;
 import com.example.cyberpay_android.network.BankResponse;
 import com.example.cyberpay_android.repository.CyberPaySDK;
@@ -165,6 +167,11 @@ public class CyberPayActivty extends AppCompatActivity {
 
         CyberPaySDK.getInstance().SetTransaction(transaction, new CyberPaySDK.TransactionCallback() {
             @Override
+            public void onProvidePin(Charge charge) {
+
+            }
+
+            @Override
             public void onSuccess(String transactionReference) {
                 Toast.makeText(CyberPayActivty.this, "Reference: " + transactionReference, Toast.LENGTH_LONG).show();
 
@@ -174,23 +181,28 @@ public class CyberPayActivty extends AppCompatActivity {
             }
 
             @Override
-            public void onOtpRequired(Transaction transaction) {
+            public void onOtpRequired(Charge transaction, Card card) {
 
                 //not needed for set transaction
             }
 
             @Override
-            public void onSecure3dRequired(Transaction transaction) {
+            public void onBankOtpRequired(ChargeBank transaction) {
 
             }
 
             @Override
-            public void onSecure3DMpgsRequired(Transaction transaction) {
+            public void onSecure3dRequired(Charge transaction) {
 
             }
 
             @Override
-            public void onEnrolOtp(Transaction transaction) {
+            public void onSecure3DMpgsRequired(Charge transaction) {
+
+            }
+
+            @Override
+            public void onEnrolOtp(Charge transaction) {
 
             }
 
@@ -212,30 +224,48 @@ public class CyberPayActivty extends AppCompatActivity {
 
         CyberPaySDK.getInstance().ChargeCard(charge, new CyberPaySDK.TransactionCallback() {
             @Override
+            public void onProvidePin(Charge charge) {
+                Toast.makeText(CyberPayActivty.this, " Card Pin Required Transaction Ref: " + charge.getReference(), Toast.LENGTH_LONG).show();
+
+                Intent intent = new Intent(CyberPayActivty.this, CardPinActivity.class);
+
+                intent.putExtra(CardPinActivity.PARAM_TRANSACTION, charge);
+
+                startActivity(intent);
+                finish();
+            }
+
+            @Override
             public void onSuccess(String transactionReference) {
 
                 //This is called only when a transaction is successful
-                Toast.makeText(CyberPayActivty.this, "Transaction successful: Transaction Ref: " + transaction.getTransactionReference(), Toast.LENGTH_LONG).show();
+                Toast.makeText(CyberPayActivty.this, "Transaction successful: Transaction Ref: " + charge.getReference(), Toast.LENGTH_LONG).show();
 
             }
 
 
             @Override
-            public void onOtpRequired(Transaction transaction) {
+            public void onOtpRequired(Charge transaction, Card card) {
                 // This is called only when otp is required
 
-                Toast.makeText(CyberPayActivty.this, "Otp Required Transaction Ref: " + transaction.getTransactionReference(), Toast.LENGTH_LONG).show();
+                Toast.makeText(CyberPayActivty.this, "Otp Required Transaction Ref: " + transaction.getReference(), Toast.LENGTH_LONG).show();
 
                 Intent intent = new Intent(CyberPayActivty.this, OtpActivity.class);
                 intent.putExtra(OtpActivity.PARAM_TRANSACTION, transaction);
+                intent.putExtra(OtpActivity.PARAM_CARD, card.getCard().toString());
 
                 startActivity(intent);
                 finish();
             }
 
             @Override
-            public void onSecure3dRequired(Transaction transaction) {
-                Toast.makeText(CyberPayActivty.this, "Transaction successful: Transaction Ref: " + transaction.getTransactionReference(), Toast.LENGTH_LONG).show();
+            public void onBankOtpRequired(ChargeBank transaction) {
+
+            }
+
+            @Override
+            public void onSecure3dRequired(Charge transaction) {
+                Toast.makeText(CyberPayActivty.this, "Transaction successful: Transaction Ref: " + transaction.getReference(), Toast.LENGTH_LONG).show();
 
                 Intent intent = new Intent(CyberPayActivty.this, MakePaymentActivity.class);
                 intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
@@ -245,8 +275,8 @@ public class CyberPayActivty extends AppCompatActivity {
             }
 
             @Override
-            public void onSecure3DMpgsRequired(Transaction transaction) {
-                Toast.makeText(CyberPayActivty.this, "Transaction successful: Transaction Ref: " + transaction.getTransactionReference(), Toast.LENGTH_LONG).show();
+            public void onSecure3DMpgsRequired(Charge transaction) {
+                Toast.makeText(CyberPayActivty.this, "Transaction successful: Transaction Ref: " + transaction.getReference(), Toast.LENGTH_LONG).show();
 
                 Intent intent = new Intent(CyberPayActivty.this, MakePaymentActivity.class);
                 intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
@@ -256,7 +286,7 @@ public class CyberPayActivty extends AppCompatActivity {
             }
 
             @Override
-            public void onEnrolOtp(Transaction transaction) {
+            public void onEnrolOtp(Charge transaction) {
 
             }
 

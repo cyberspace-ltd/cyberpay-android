@@ -1,10 +1,11 @@
 package com.example.cyberpay_android.models;
 
-//import com.google.gson.JsonObject;
 
 import org.json.JSONObject;
 
-public class Card {
+import java.io.Serializable;
+
+public class Card implements Serializable {
     private JSONObject card;
 
     public JSONObject getCard() {

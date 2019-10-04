@@ -1,5 +1,6 @@
 package com.example.cyberpay_android.models;
 
+import org.json.JSONObject;
 
 
 import java.io.Serializable;
@@ -10,6 +11,10 @@ public class Charge implements Serializable {
 //    private String accountName;
 
     private String reference;
+//    private JSONObject card;
+    private String Otp;//only if otp is required
+    private String returnUrl;
+
 
 
 //    private String accountNumber;
@@ -28,6 +33,7 @@ public class Charge implements Serializable {
 
     private String cvv;
 
+    private String registeredPhoneNumber;
 
     public Charge() {
     }
@@ -97,6 +103,30 @@ public class Charge implements Serializable {
 //        this.accountNumber = accountNumber;
 //    }
 
+    public String getOtp() {
+        return Otp;
+    }
+
+    public void setOtp(String otp) {
+        this.Otp = otp;
+    }
+
+//    public JSONObject getCard() {
+//        return card;
+//    }
+//
+//    public void setCard(JSONObject card) {
+//        this.card = card;
+//    }
+
+    public String getReturnUrl() {
+        return returnUrl;
+    }
+
+    public void setReturnUrl(String returnUrl) {
+        this.returnUrl = returnUrl;
+    }
+
     public String getCardPin() {
         return cardPin;
     }
@@ -107,6 +137,14 @@ public class Charge implements Serializable {
 
     public String getExpiry() {
         return expiryMonth + "20"+ expiryYear;
+    }
+
+    public String getRegisteredPhoneNumber() {
+        return registeredPhoneNumber;
+    }
+
+    public void setRegisteredPhoneNumber(String registeredPhoneNumber) {
+        this.registeredPhoneNumber = registeredPhoneNumber;
     }
 
 }

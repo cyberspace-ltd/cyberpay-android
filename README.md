@@ -28,7 +28,7 @@ The Cyberpay Android SDK is compatible with Android Apps supported from Android 
 ```java
 
 	dependencies {
-	        implementation 'com.github.cyberspace-ltd:cyberpay-android:1.0'
+	        implementation 'com.github.cyberspace-ltd:cyberpay-android:2.0'
 	}
   
 ```
@@ -87,33 +87,44 @@ public class MainActivity extends AppCompatActivity {
 
 //The SetTransaction method returns a transaction Reference in the `onSuccess()` callback. Assign this transaction reference to the `transactionParameter` provided in the previous 
 //step and call the charge card method
-CyberPaySDK.getInstance().SetTransaction(transaction, new CyberPaySDK.TransactionCallback() {
+
+        CyberPaySDK.getInstance().SetTransaction(transaction, new CyberPaySDK.TransactionCallback() {
+            @Override
+            public void onProvidePin(Charge charge) {
+
+            }
+
             @Override
             public void onSuccess(String transactionReference) {
-            
-            //Remember to set transaction Reference in Transaction model
+                Toast.makeText(CyberPayActivty.this, "Reference: " + transactionReference, Toast.LENGTH_LONG).show();
+
                 charge.setReference(transaction.getTransactionReference());
                 ChargeCard();
             }
 
             @Override
-            public void onOtpRequired(Transaction transaction) {
+            public void onOtpRequired(Charge transaction, Card card) {
 
                 //not needed for set transaction
             }
 
             @Override
-            public void onSecure3dRequired(Transaction transaction) {
+            public void onBankOtpRequired(ChargeBank transaction) {
 
             }
 
             @Override
-            public void onSecure3DMpgsRequired(Transaction transaction) {
+            public void onSecure3dRequired(Charge transaction) {
 
             }
 
             @Override
-            public void onEnrolOtp(Transaction transaction) {
+            public void onSecure3DMpgsRequired(Charge transaction) {
+
+            }
+
+            @Override
+            public void onEnrolOtp(Charge transaction) {
 
             }
 
@@ -136,6 +147,15 @@ CyberPaySDK.getInstance().SetTransaction(transaction, new CyberPaySDK.Transactio
 
         CyberPaySDK.getInstance().ChargeCard(charge, new CyberPaySDK.TransactionCallback() {
             @Override
+            public void onProvidePin(Charge charge) {
+                
+                //This is called only when a transaction is returns Provide Pin
+                //Add the pin to charge.setCardPin() and call ChargeCard again
+
+                
+            }
+
+            @Override
             public void onSuccess(String transactionReference) {
 
                 //This is called only when a transaction is successful
@@ -144,36 +164,38 @@ CyberPaySDK.getInstance().SetTransaction(transaction, new CyberPaySDK.Transactio
 
 
             @Override
-            public void onOtpRequired(Transaction transaction) {
+            public void onOtpRequired(Charge transaction, Card card) {
                 // This is called only when otp is required
+
             }
 
             @Override
-            public void onSecure3dRequired(Transaction transaction) {
-                
-                // This is called only when onSecure3dRequired is required to 
-                // complete the transaction in a webview with the return URl
+            public void onBankOtpRequired(ChargeBank transaction) {
 
-                transaction.getReturnUrl()
             }
 
             @Override
-            public void onSecure3DMpgsRequired(Transaction transaction) {
-                // This is called only when onSecure3DMpgsRequired is required to 
-                // complete the transaction in a webview with the return URl
-                
-                transaction.getReturnUrl().
+            public void onSecure3dRequired(Charge transaction) {
+                // This is called only when onSecure3dRequired is required
             }
 
             @Override
-            public void onEnrolOtp(Transaction transaction) {
+            public void onSecure3DMpgsRequired(Charge transaction) {
+              
+                // This is called only when onSecure3DMpgsRequired is required
+
+            }
+
+            @Override
+            public void onEnrolOtp(Charge transaction) {
+                // This is called only when onEnrolOtp is required
 
             }
 
             @Override
             public void onError(Throwable error, Transaction transaction) {
 
-              //This is called only when an error occurs
+                // This is called only when Error occured
 
             }
 
@@ -183,6 +205,7 @@ CyberPaySDK.getInstance().SetTransaction(transaction, new CyberPaySDK.Transactio
 
             }
         });
+
 
      
 ```
@@ -194,25 +217,62 @@ When a verification is required, the Otp verification method is called.
 The `onOtpRequired()` method from Step 4 returns a `Transaction` Object. You can send this same `Transaction` Object to the `VerifyOtp` Otp Method.
 
 ```java
-    CyberPaySDK.getInstance().VerifyOtp(transaction, new CyberPaySDK.TransactionCallback() {
-            @Override
-            public void onSuccess(String transactionReference) {
 
-                //This is called when a transaction is successful
-            }
-
-
-            @Override
-            public void onOtpRequired(Transaction transaction) {
-                // Not needed in this method
-            }
-
-            @Override
-            public void onError(Throwable error, Transaction transaction) {
-
-              //This is called only when an error occurs
-            }
-        });
+CyberPaySDK.getInstance().VerifyOtp(charge, cardmodel, new CyberPaySDK.TransactionCallback() {
+    @Override
+    public void onProvidePin(Charge charge) {
+    
+        //this is called when onProvidePin is required
+    }
+    
+    @Override
+    public void onSuccess(String transactionReference) {
+        //This is called when a transaction is successful
+    
+    }
+    
+    @Override
+    public void onOtpRequired(Charge transaction, Card card) {
+        // Not needed in this method
+    
+    }
+    
+    @Override
+    public void onBankOtpRequired(ChargeBank transaction) {
+        // Not needed in this method    
+    }
+    
+    @Override
+    public void onSecure3dRequired(Charge transaction) {
+        // Not needed in this method
+    
+    }
+    
+    @Override
+    public void onSecure3DMpgsRequired(Charge transaction) {
+        // Not needed in this method
+    
+    }
+    
+    @Override
+    public void onEnrolOtp(Charge transaction) {
+        // Not needed in this method
+    
+    }
+    
+    @Override
+    public void onError(Throwable error, Transaction transaction) {
+        //This is called only when an error occurs
+    
+    }
+    
+    @Override
+    public void onBank(List<BankResponse> bankResponses) {
+    // Not needed in this method
+    
+    }
+    });
+   
 ```
 **Note**: Other methods for the cyberpay SDK exist which include verification of transaction by the merchant reference, and also by the transaction Reference.
 
