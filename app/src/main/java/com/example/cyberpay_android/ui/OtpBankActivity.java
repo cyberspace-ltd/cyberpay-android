@@ -30,6 +30,7 @@ public class OtpBankActivity extends AppCompatActivity implements CyberPaySDK.Tr
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_otp);
 
