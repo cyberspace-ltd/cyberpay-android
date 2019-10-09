@@ -45,7 +45,7 @@ public class BankAccountActivity extends AppCompatActivity {
         setContentView(R.layout.activity_bank_account);
         loadBanks();
 
-        CyberPaySDK.initializeTestEnvironment("d5355204f9cf495f853c8f8d26ada19b");
+        CyberPaySDK.initializeTestEnvironment("");
 
         amount = findViewById(R.id.amount);
 

@@ -28,7 +28,7 @@ The Cyberpay Android SDK is compatible with Android Apps supported from Android 
 ```java
 
 	dependencies {
-	        implementation 'com.github.cyberspace-ltd:cyberpay-android:2.0'
+	        implementation 'com.github.cyberspace-ltd:cyberpay-android:2.2'
 	}
   
 ```
@@ -152,7 +152,15 @@ public class MainActivity extends AppCompatActivity {
                 //This is called only when a transaction is returns Provide Pin
                 //Add the pin to charge.setCardPin() and call ChargeCard again
 
+                //Call CardPinActivity.class with charge as the transaction parameters
+                Intent intent = new Intent(MainActivity.this, CardPinActivity.class);
                 
+                intent.putExtra(CardPinActivity.PARAM_TRANSACTION, charge);
+                
+                startActivity(intent);
+                
+                //In the CardPinActivity.class get the charge and set Pin to the card 
+                //Then call CyberPaySDK.getInstance().ChargeCard with the updated charge 
             }
 
             @Override
@@ -166,6 +174,14 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onOtpRequired(Charge transaction, Card card) {
                 // This is called only when otp is required
+                
+                //Start OTP Activity with transaction and getCard as intent extras.
+                
+                Intent intent = new Intent(MainActivity.this, OtpActivity.class);
+                intent.putExtra(OtpActivity.PARAM_TRANSACTION, transaction);
+                intent.putExtra(OtpActivity.PARAM_CARD, card.getCard().toString());
+
+               
 
             }
 
@@ -206,15 +222,89 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-
-     
 ```
-**Note**: The chargeCard() method returns 3 callbacks: `onSuccess()`, which means your transaction was successful and returns the transaction Reference, `onOtpRequired()`, which means an otp is required to verify this transaction,
+
+**Step 5**: Verify Otp  providing the Transaction and Card Parameters provided in  **Step 4**
+```java
+
+
+    //Get the intent extras and Store PARAM_CARD in Card Model and Store PARAM_TRANSACTION in Charge Model
+    Card cardmodel = new Card();
+
+    String card = bundle.getString(PARAM_CARD);
+    Charge charge = (Charge) getIntent().getSerializableExtra(PARAM_TRANSACTION);
+
+    //Deserialize the card with JSONObject
+    //In the OtpActivity.class use JSONObject to deSerialize the card object
+                   
+    //NOTE GSON deserializer doesnt work for the payment Gateway.
+                    
+                                        
+    JSONObject jsonObject = null;
+    try {
+        jsonObject = new JSONObject(card);
+        cardmodel.setCard(jsonObject);
+    } catch (JSONException e) {
+        e.printStackTrace();
+    }
+
+    charge.setOtp("OTP NUMBER");
+    CyberPaySDK.getInstance().VerifyOtp(charge, cardmodel, new CyberPaySDK.TransactionCallback() {
+        @Override
+        public void onProvidePin(Charge charge) {
+
+        }
+
+        @Override
+        public void onSuccess(String transactionReference) {
+
+            Toast.makeText(OtpActivity.this, "Reference: " + transactionReference, Toast.LENGTH_LONG).show();
+
+        }
+
+        @Override
+        public void onOtpRequired(Charge transaction, Card card) {
+
+        }
+
+        @Override
+        public void onBankOtpRequired(ChargeBank transaction) {
+
+        }
+
+        @Override
+        public void onSecure3dRequired(Charge transaction) {
+
+        }
+
+        @Override
+        public void onSecure3DMpgsRequired(Charge transaction) {
+
+        }
+
+        @Override
+        public void onEnrolOtp(Charge transaction) {
+
+        }
+
+        @Override
+        public void onError(Throwable error, Transaction transaction) {
+
+            // Toast Error
+        }
+
+        @Override
+        public void onBank(List<BankResponse> bankResponses) {
+
+        }
+    });
+```
+**Note**: The chargeCard() method returns 3 callbacks: onProvidePin()`, which allows user to provide their pin and set it in the charge and call `CyberPaySDK.getInstance().ChargeCard(charge)` again with the updated charge` ```onSuccess()`, which means your transaction was successful and returns the transaction Reference, `onOtpRequired()`, which means an otp is required to verify this transaction,
 and also returns the transaction reference, `onError()`, which returns an error message, when chargeCard() fails.
 
 **Step 5** : Verify OTP
 When a verification is required, the Otp verification method is called.
-The `onOtpRequired()` method from Step 4 returns a `Transaction` Object. You can send this same `Transaction` Object to the `VerifyOtp` Otp Method.
+The `onOtpRequired()` method from Step 4 returns a `Transaction` Object and `Card` Object. You can send this same `Transaction` and `Card` Object to the `VerifyOtp` Otp Method.
 
 ```java
 

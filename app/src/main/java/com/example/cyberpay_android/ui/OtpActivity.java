@@ -46,7 +46,7 @@ public class OtpActivity extends AppCompatActivity implements CyberPaySDK.Transa
         cardmodel = new Card();
 
         card = bundle.getString(PARAM_CARD);
-        Log.d("CARD", card);
+
         charge = (Charge) getIntent().getSerializableExtra(PARAM_TRANSACTION);
 
         JSONObject jsonObject = null;

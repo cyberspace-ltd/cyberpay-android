@@ -52,7 +52,7 @@ public class CyberPayActivty extends AppCompatActivity {
         setContentView(R.layout.activity_cyberpay);
 
 
-        CyberPaySDK.initializeTestEnvironment("d5355204f9cf495f853c8f8d26ada19b");
+        CyberPaySDK.initializeTestEnvironment("");
 
         amount = findViewById(R.id.amount);
         editText_pin = findViewById(R.id.editText_pin);
