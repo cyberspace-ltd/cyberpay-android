@@ -3,24 +3,16 @@
     xmlns:tools="http://schemas.android.com/tools"
     package="com.example.cyberpay_android">
 
-    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
-    <uses-permission android:name="android.permission.INTERNET" />
-    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
-
-    <application>
-        <activity android:name=".ui.CardPinActivity"></activity>
+    <application
+        android:supportsRtl="true"
+        tools:ignore="GoogleAppIndexingWarning">
+        <activity android:name=".ui.CardPinActivity"/>
         <activity
             android:name=".ui.MakePaymentActivity"
             android:screenOrientation="portrait" />
         <activity
             android:name=".ui.CyberpayPaymentSelectionActivity"
-            android:screenOrientation="portrait">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
-        </activity>
+            android:screenOrientation="portrait"/>
         <activity
             android:name=".ui.OtpActivity"
             android:screenOrientation="portrait" />
