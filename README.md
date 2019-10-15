@@ -193,6 +193,11 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onSecure3dRequired(Charge transaction) {
                 // This is called only when onSecure3dRequired is required
+                Intent intent = new Intent(CyberPayActivty.this, MakePaymentActivity.class);
+                intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                intent.putExtra(MakePaymentActivity.PARAM_TRANSACTION, transaction.getReturnUrl());
+                startActivity(intent);
+                finish();
             }
 
             @Override
@@ -200,6 +205,11 @@ public class MainActivity extends AppCompatActivity {
               
                 // This is called only when onSecure3DMpgsRequired is required
 
+                Intent intent = new Intent(CyberPayActivty.this, MakePaymentActivity.class);
+                intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                intent.putExtra(MakePaymentActivity.PARAM_TRANSACTION, transaction.getReturnUrl());
+                startActivity(intent);
+                finish();
             }
 
             @Override
@@ -298,6 +308,7 @@ public class MainActivity extends AppCompatActivity {
 
         }
     });
+    
 ```
 **Note**: The chargeCard() method returns 3 callbacks: onProvidePin()`, which allows user to provide their pin and set it in the charge and call `CyberPaySDK.getInstance().ChargeCard(charge)` again with the updated charge` ```onSuccess()`, which means your transaction was successful and returns the transaction Reference, `onOtpRequired()`, which means an otp is required to verify this transaction,
 and also returns the transaction reference, `onError()`, which returns an error message, when chargeCard() fails.
