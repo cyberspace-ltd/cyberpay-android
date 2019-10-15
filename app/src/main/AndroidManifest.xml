@@ -9,7 +9,8 @@
 
     <application
         android:supportsRtl="true"
-        tools:ignore="GoogleAppIndexingWarning">
+        tools:ignore="GoogleAppIndexingWarning"
+        >
         <activity android:name=".ui.CardPinActivity"/>
         <activity
             android:name=".ui.MakePaymentActivity"
