@@ -1,5 +1,6 @@
-# cyberpay-android
-[![](https://jitpack.io/v/cyberspace-ltd/cyberpay-android.svg)](https://jitpack.io/#cyberspace-ltd/cyberpay-android)
+# cyberpay-android (DEPRICATED)
+[![](https://jitpack.io/v/cyberspace-ltd/cyberpay-android.svg)](https://jitpack.io/#cyberspace-ltd/cyberpay-android) Use this link https://github.com/cyberspace-ltd/cyberpay-androidx
+
 
 The Android SDK to integrate to the cyberpay payment gateway
 The Cyberpay SDK makes it quick and easy to build seamless payment into your android app. The SDK contains custom views, and helps in managing the Cyberspace API.
